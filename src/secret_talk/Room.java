@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Room {
-	private Vector<User> userList;
+	private Vector<User> userList = new Vector<>();
 
 	private String roomName;
 	private int passWord;

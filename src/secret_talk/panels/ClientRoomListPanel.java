@@ -141,7 +141,8 @@ public class ClientRoomListPanel extends JPanel implements ActionListener{
 	}
 
 	private void addEventListener() {
-
+		newRoomBtn.addActionListener(this);
+		enterRoomBtn.addActionListener(this);
 	}
 
 	@Override

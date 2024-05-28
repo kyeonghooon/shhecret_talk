@@ -16,6 +16,7 @@ import lombok.Setter;
 import secret_talk.interfaces.CallBackClientService;
 import secret_talk.interfaces.ProtocolImpl;
 import secret_talk.panels.ClientFrame;
+import secret_talk.panels.ClientRoomPanel;
 
 @Getter
 @Setter
@@ -112,6 +113,7 @@ public class Client implements ProtocolImpl, CallBackClientService {
 	// 상호작용 가능한 컴포넌트의 주소를 주입받음
 	public void setupComponet() {
 		userList = clientFrame.getUserListPanel().getUserList();
+		roomList = clientFrame.getRoomListPanel().getRoomList();
 		newRoomBtn = clientFrame.getRoomListPanel().getNewRoomBtn();
 		enterRoomBtn = clientFrame.getRoomListPanel().getEnterRoomBtn();
 	}
@@ -164,10 +166,7 @@ public class Client implements ProtocolImpl, CallBackClientService {
 			// TODO 방 이름 중복 메세지 띄움
 			break;
 		case "SuccessNewRoom":
-			myRoom = from;
-			newRoomBtn.setEnabled(false);
-			enterRoomBtn.setEnabled(false);
-			// TODO tap에 추가하고 자동으로 띄워야함 전체 메소드로하자
+			successNewRoom();
 			break;
 		case "kick":
 			data = tokenizer.nextToken();
@@ -205,6 +204,15 @@ public class Client implements ProtocolImpl, CallBackClientService {
 	public void newRoom() {
 		roomNameList.add(from);
 		roomList.setListData(roomNameList);
+	}
+	
+	public void successNewRoom() {
+		myRoom = from;
+		newRoomBtn.setEnabled(false);
+		enterRoomBtn.setEnabled(false);
+		ClientRoomPanel roomPanel = new ClientRoomPanel(this, from);
+		clientFrame.getTabPane().addTab(from, roomPanel);
+		clientFrame.getTabPane().setSelectedComponent(roomPanel);
 	}
 
 	// 버튼 상호작용 콜백 메서드
