@@ -17,6 +17,7 @@ import secret_talk.Server;
 @Setter
 public class ServerFrame extends JFrame {
 
+	// 참조 변수
 	private Server mContext;
 	private ServerFrame serverFrame;
 	private ServerLogPanel logPanel;
@@ -41,7 +42,7 @@ public class ServerFrame extends JFrame {
 		backgroundLabel = new JLabel();
 
 		logPanel = new ServerLogPanel();
-		userListPanel = new ServerUserListPanel();
+		userListPanel = new ServerUserListPanel(mContext);
 	}
 
 	private void setInitLayout() {

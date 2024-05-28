@@ -2,5 +2,13 @@
 reject : id 중복으로 인한 거절
 permit : id 허용됨
 
-<리스트 관련>
-UserList : 유저 리스트를 주고 받을때 사용
+<신규 유저 관련>
+newUser : 신규 유저 접속
+userList : 신규 유저를 위한 유저 리스트를 주고 받을때 사용
+roomList : 신규 유저를 위한 방 리스트를 주고 받을때 사용
+
+<접속 종료 관련>
+logOutUser : 유저 접속 해제시
+
+<방 관리>
+newRoom : 새로운 방 생성

@@ -2,8 +2,6 @@ package secret_talk.panels;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -15,32 +13,28 @@ import javax.swing.border.LineBorder;
 
 import lombok.Getter;
 import lombok.Setter;
-import secret_talk.Server;
+import secret_talk.Client;
 
 @Getter
 @Setter
-public class ServerUserListPanel extends JPanel{
+public class ClientUserListPanel extends JPanel {
 	
-	Server mContext;
-	
+	private Client mContext;
+
 	private JLabel backgroundLabel;
-	
+
 	// 유저 리스트 컴포넌트
 	private JLabel textLabelList;
 	private JScrollPane scrollPane;
 	private JList<String> userList;
-	
+
 	// 메세지 컴포넌트
 	private JLabel textLabelMsg;
 	private JTextField messageField;
 	private JButton personalMsgBtn;
 	private JButton groupMsgBtn;
-	
-	// 강퇴 컴포넌트
-	private JLabel textLabelKick;
-	private JButton kickBtn;
 
-	public ServerUserListPanel(Server mContext) {
+	public ClientUserListPanel(Client mContext) {
 		this.mContext = mContext;
 		initData();
 		setInitLayout();
@@ -50,86 +44,66 @@ public class ServerUserListPanel extends JPanel{
 	private void initData() {
 		// TODO 이미지 교체
 		backgroundLabel = new JLabel();
-		
+
 		// 유저 리스트 컴포넌트
 		textLabelList = new JLabel("유저 리스트");
 		userList = new JList<String>();
 		scrollPane = new JScrollPane(userList);
-		
+
 		// 메세지 보내기 컴포넌트
 		textLabelMsg = new JLabel("메세지 보내기");
 		messageField = new JTextField();
 		personalMsgBtn = new JButton("개인");
 		groupMsgBtn = new JButton("단체");
-		
-		// 강퇴하기 컴포넌트
-		textLabelKick = new JLabel("강퇴 하기");
-		kickBtn = new JButton("강퇴");
 	}
 
 	private void setInitLayout() {
-		setSize(350, 566);
+		setSize(getWidth(), getHeight());
 		setLayout(null); // 좌표값으로 배치
 
 		add(backgroundLabel);
-		backgroundLabel.setSize(350, 200);
+		backgroundLabel.setSize(getWidth(), getHeight());
 		backgroundLabel.setLocation(0, 0);
-		
+
 		// 유저 리스트 텍스트 라벨
 		add(textLabelList);
-		textLabelList.setFont(new Font("Noto Sans KR", Font.BOLD, 15));
-		textLabelList.setSize(90, 15);
-		textLabelList.setLocation(47, 0);
-		
+		textLabelList.setFont(new Font("Noto Sans KR", Font.BOLD, 20));
+		textLabelList.setSize(150, 23);
+		textLabelList.setLocation(15, 15);
+
 		// 유저 리스트 (스크롤)
 		add(scrollPane);
 		scrollPane.setBorder(new LineBorder(Color.BLACK, 2));
-		scrollPane.setSize(150, 150);
-		scrollPane.setLocation(15, 30);
-		
+		scrollPane.setSize(350, 380);
+		scrollPane.setLocation(15, 50);
+
 		// 메세지 보내기 텍스트 라벨
 		add(textLabelMsg);
-		textLabelMsg.setFont(new Font("Noto Sans KR", Font.BOLD, 15));
-		textLabelMsg.setSize(100, 15);
-		textLabelMsg.setLocation(200, 0);
-		
+		textLabelMsg.setFont(new Font("Noto Sans KR", Font.BOLD, 20));
+		textLabelMsg.setSize(160, 23);
+		textLabelMsg.setLocation(15, 445);
+
 		// 메세지 텍스트 필드
 		add(messageField);
-		messageField.setSize(136, 25);
-		messageField.setLocation(180, 30);
-		
+		messageField.setSize(350, 30);
+		messageField.setLocation(15, 480);
+		messageField.setFont(new Font("Noto Sans KR", Font.PLAIN, 17));
+
 		// 개인 메세지 버튼
 		add(personalMsgBtn);
-		personalMsgBtn.setFont(new Font("Noto Sans KR", Font.BOLD, 12));
-		personalMsgBtn.setSize(60, 25);
-		personalMsgBtn.setLocation(180, 65);
-		
+		personalMsgBtn.setFont(new Font("Noto Sans KR", Font.BOLD, 20));
+		personalMsgBtn.setSize(165, 30);
+		personalMsgBtn.setLocation(15, 525);
+
 		// 단체 메세지 버튼
 		add(groupMsgBtn);
-		groupMsgBtn.setFont(new Font("Noto Sans KR", Font.BOLD, 12));
-		groupMsgBtn.setSize(60, 25);
-		groupMsgBtn.setLocation(255, 65);
-		
-		// 강퇴 텍스트 필드
-		add(textLabelKick);
-		textLabelKick.setFont(new Font("Noto Sans KR", Font.BOLD, 15));
-		textLabelKick.setSize(100, 25);
-		textLabelKick.setLocation(215, 120);
-		
-		// 강퇴 버튼
-		add(kickBtn);
-		kickBtn.setFont(new Font("Noto Sans KR", Font.BOLD, 12));
-		kickBtn.setSize(136, 25);
-		kickBtn.setLocation(180, 155);
+		groupMsgBtn.setFont(new Font("Noto Sans KR", Font.BOLD, 20));
+		groupMsgBtn.setSize(165, 30);
+		groupMsgBtn.setLocation(200, 525);
 	}
 
 	private void addEventListener() {
-		kickBtn.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				mContext.clickKickBtn(userList.getSelectedValue());
-			}
-		});
+
 	}
+
 }
