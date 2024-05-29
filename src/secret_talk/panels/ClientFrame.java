@@ -65,6 +65,7 @@ public class ClientFrame extends JFrame {
 		add(tabPane);
 		tabPane.setSize(getWidth(), getHeight());
 		tabPane.setLocation(0, 0);
+		tabPane.setFont(new Font("Noto Sans KR", Font.BOLD, 14));
 		
 		tabPane.addTab("유저 리스트", userListPanel);
 		tabPane.addTab("방 리스트", roomListPanel);

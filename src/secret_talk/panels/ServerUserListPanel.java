@@ -21,7 +21,7 @@ import secret_talk.Server;
 @Setter
 public class ServerUserListPanel extends JPanel{
 	
-	Server mContext;
+	private Server mContext;
 	
 	private JLabel backgroundLabel;
 	

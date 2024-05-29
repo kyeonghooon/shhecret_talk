@@ -204,7 +204,7 @@ public class User extends Thread implements ProtocolImpl {
 
 	@Override
 	public void roomMsg() {
-		mContext.logMessage("[메세지] " + from + "에서 " + data + " : " + msg);
+		mContext.logMessage("[메세지] " + from + "에서 " + data + " : " + msg + "\n");
 		for (int i = 0; i < mContext.getRoomList().size(); i++) {
 			Room room = mContext.getRoomList().elementAt(i);
 			// 방이름이 매치된다면

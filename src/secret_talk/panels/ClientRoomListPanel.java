@@ -6,7 +6,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -22,8 +21,8 @@ import secret_talk.Client;
 
 @Getter
 @Setter
-public class ClientRoomListPanel extends JPanel implements ActionListener{
-	
+public class ClientRoomListPanel extends JPanel implements ActionListener {
+
 	private Client mContext;
 
 	private JLabel backgroundLabel;
@@ -161,7 +160,7 @@ public class ClientRoomListPanel extends JPanel implements ActionListener{
 			String roomName = roomNameField.getText();
 			String password = passwordField.getText();
 			int passwordInt = Integer.parseInt(password);
-			if (999 < passwordInt && passwordInt < 10000) {
+			if ((999 < passwordInt && passwordInt < 10000) || password.equals("")) {
 				mContext.clickNewRoomBtn(roomName, password);
 				roomNameField.setText("");
 				passwordField.setText("");
@@ -169,12 +168,7 @@ public class ClientRoomListPanel extends JPanel implements ActionListener{
 		} else if (e.getSource() == enterRoomBtn) {
 			String roomName = roomNameField.getText();
 			String password = passwordField.getText();
-			int passwordInt = Integer.parseInt(password);
-			if (999 < passwordInt && passwordInt < 10000) {
-				mContext.clickEnterRoomBtn(roomName, password);
-				roomNameField.setText("");
-				passwordField.setText("");
-			}
+			mContext.clickEnterRoomBtn(roomName, password);
 		}
 	}
 

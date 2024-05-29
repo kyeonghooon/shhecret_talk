@@ -10,7 +10,6 @@ import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JList;
-import javax.swing.JTextArea;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -127,6 +126,7 @@ public class Client implements ProtocolImpl, CallBackClientService {
 			try {
 				String msg;
 				while ((msg = reader.readLine()) != null) {
+					// TODO 삭제 예정 확인용 코드
 					System.out.println(msg);
 					checkProtocol(msg);
 				}
@@ -180,16 +180,16 @@ public class Client implements ProtocolImpl, CallBackClientService {
 		case "FailEnterRoom":
 			// TODO 비밀번호 틀림 메세지 띄움
 			break;
-			
+
 		// 방 메세지 프로토콜
 		case "roomMsg":
 			data = tokenizer.nextToken();
-			if(tokenizer.hasMoreTokens()) {
+			if (tokenizer.hasMoreTokens()) {
 				msg = tokenizer.nextToken();
 			}
 			roomMsg();
 			break;
-			
+
 		// 방 나가기 프로토콜
 		case "outRoom":
 			outRoom();
@@ -251,7 +251,7 @@ public class Client implements ProtocolImpl, CallBackClientService {
 		clientFrame.getTabPane().addTab(from, roomPanel);
 		clientFrame.getTabPane().setSelectedComponent(roomPanel);
 	}
-	
+
 	// 방 입장 성공시 호출
 	@Override
 	public void enterRoom() {
@@ -262,26 +262,25 @@ public class Client implements ProtocolImpl, CallBackClientService {
 		clientFrame.getTabPane().addTab(from, roomPanel);
 		clientFrame.getTabPane().setSelectedComponent(roomPanel);
 	}
-	
+
 	// 방에서 보내는 모든 메세지 -> 채팅방에 띄움
 	@Override
 	public void roomMsg() {
 		// data : userId, msg : 메세지
+		if (msg.equals("입장")) {
+			roomPanel.getChatArea().append(data + "님이 입장 하셨습니다\n");
+			return;
+		} else if (msg.equals("퇴장")) {
+			roomPanel.getChatArea().append(data + "님이 퇴장 하셨습니다\n");
+			return;
+		}
 		if (data.equals(myId)) {
 			data = "나";
-		} else {
-			if (msg.equals("입장")) {
-				roomPanel.getChatArea().append(data + "님이 입장 하셨습니다\n");
-				return;
-			} else if (msg.equals("퇴장")){
-				roomPanel.getChatArea().append(data + "님이 퇴장 하셨습니다\n");
-				return;
-			}
-			
 		}
+
 		roomPanel.getChatArea().append(data + " : " + msg + "\n");
 	}
-	
+
 	// 방 나가기 시 호출
 	@Override
 	public void outRoom() {
@@ -297,14 +296,20 @@ public class Client implements ProtocolImpl, CallBackClientService {
 	public void clickNewRoomBtn(String roomName, String password) {
 		writer.println("newRoom/" + roomName + "/" + password);
 	}
-	
+
 	@Override
 	public void clickEnterRoomBtn(String roomName, String password) {
 		writer.println("enterRoom/" + roomName + "/" + password);
 	}
+
 	@Override
 	public void clickOutRoomBtn(String roomName) {
 		writer.println("outRoom/" + roomName);
+	}
+
+	@Override
+	public void clickRoomMsgBtn(String roomName, String msg) {
+		writer.println("roomMsg/" + roomName + "/" + myId + "/" + msg);
 	}
 
 	// 테스트 코드

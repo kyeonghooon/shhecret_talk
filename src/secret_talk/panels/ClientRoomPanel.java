@@ -120,6 +120,10 @@ public class ClientRoomPanel extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == outRoomBtn) {
 			mContext.clickOutRoomBtn(roomName);
+		} else if (e.getSource() == messageBtn) {
+			String msg = messageField.getText();
+			mContext.clickRoomMsgBtn(roomName, msg);
+			messageField.setText("");
 		}
 	}
 
