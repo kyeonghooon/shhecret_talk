@@ -56,7 +56,7 @@ public class Server implements CallBackServerService{
 			while (true) {
 				try {
 					logMessage("[알림] 사용자 접속 대기\n");
-					User user = new User(this, serverSocket.accept());
+					new User(this, serverSocket.accept());
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -105,13 +105,22 @@ public class Server implements CallBackServerService{
 			(userList.elementAt(i)).getWriter().println(msg);
 		}
 	}
-
-	// 테스트 코드
-	public static void main(String[] args) {
-		Server server = new Server();
-		server.openFrame();
+	
+	
+	// 방에서 유저를 강제로 빼는 메서드 - 클라이언트가 사라졌을때만 호출됨
+	public void outUserFromRoom(String roomName, User user) {
+		if (roomName == null) {
+			return;
+		}
+		for (int i = 0; i < roomList.size(); i++) {
+			Room room = roomList.elementAt(i);
+			if (roomName.equals(room.getRoomName())) {
+				room.getUserList().remove(user);
+			}
+		}
 	}
-
+	
+	// 버튼 상호작용 콜백 메서드
 	@Override
 	public void clickKickBtn(String userId) {
 		for (int i = 0; i < userList.size(); i++) {
@@ -119,6 +128,7 @@ public class Server implements CallBackServerService{
 			if (userId.equals(user.getUserId())) {
 				try {
 					user.getWriter().println("kick/" + user.getId() + "/" + "서버 관리자에의해 퇴장처리 되었습니다.");
+					user.logOutUser();
 					// 소켓을 닫아버림
 					user.getSocket().close();
 				} catch (IOException e) {
@@ -127,4 +137,10 @@ public class Server implements CallBackServerService{
 			}
 		}
 	}
+	
+	// 테스트 코드
+		public static void main(String[] args) {
+			Server server = new Server();
+			server.openFrame();
+		}
 }

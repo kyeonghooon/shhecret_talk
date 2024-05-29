@@ -16,4 +16,8 @@ public interface ProtocolImpl {
 	 * 방 생성, 입장, 나가기<br>
 	 */
 	void newRoom();
+	void enterRoom();
+	void outRoom();
+	
+	void roomMsg();
 }

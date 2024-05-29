@@ -4,6 +4,9 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -93,6 +96,7 @@ public class ClientRoomListPanel extends JPanel implements ActionListener{
 		textLabelList.setLocation(15, 15);
 
 		// 방 리스트 (스크롤)
+		roomList.setFont(new Font("Noto Sans KR", Font.BOLD, 15));
 		add(scrollPane);
 		scrollPane.setBorder(new LineBorder(Color.BLACK, 2));
 		scrollPane.setSize(350, 380);
@@ -143,6 +147,12 @@ public class ClientRoomListPanel extends JPanel implements ActionListener{
 	private void addEventListener() {
 		newRoomBtn.addActionListener(this);
 		enterRoomBtn.addActionListener(this);
+		roomList.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				roomNameField.setText(roomList.getSelectedValue());
+			}
+		});
 	}
 
 	@Override
@@ -153,9 +163,18 @@ public class ClientRoomListPanel extends JPanel implements ActionListener{
 			int passwordInt = Integer.parseInt(password);
 			if (999 < passwordInt && passwordInt < 10000) {
 				mContext.clickNewRoomBtn(roomName, password);
+				roomNameField.setText("");
+				passwordField.setText("");
 			}
 		} else if (e.getSource() == enterRoomBtn) {
-			
+			String roomName = roomNameField.getText();
+			String password = passwordField.getText();
+			int passwordInt = Integer.parseInt(password);
+			if (999 < passwordInt && passwordInt < 10000) {
+				mContext.clickEnterRoomBtn(roomName, password);
+				roomNameField.setText("");
+				passwordField.setText("");
+			}
 		}
 	}
 

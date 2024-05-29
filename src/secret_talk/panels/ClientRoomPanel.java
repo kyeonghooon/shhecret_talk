@@ -2,14 +2,13 @@ package secret_talk.panels;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.util.Vector;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
@@ -20,7 +19,7 @@ import secret_talk.Client;
 
 @Getter
 @Setter
-public class ClientRoomPanel extends JPanel {
+public class ClientRoomPanel extends JPanel implements ActionListener {
 
 	private Client mContext;
 
@@ -37,7 +36,7 @@ public class ClientRoomPanel extends JPanel {
 	private JButton messageBtn;
 	
 	// 방에서 나가기 버튼
-	private JButton outRoom;
+	private JButton outRoomBtn;
 
 	private String roomName;
 
@@ -64,7 +63,7 @@ public class ClientRoomPanel extends JPanel {
 		messageBtn = new JButton("메세지 보내기");
 		
 		// 나가기 버튼
-		outRoom = new JButton("나가기");
+		outRoomBtn = new JButton("나가기");
 	}
 
 	private void setInitLayout() {
@@ -105,15 +104,23 @@ public class ClientRoomPanel extends JPanel {
 		messageBtn.setSize(165, 30);
 		messageBtn.setLocation(15, 525);
 		
-		add(outRoom);
-		outRoom.setFont(new Font("Noto Sans KR", Font.BOLD, 20));
-		outRoom.setSize(165, 30);
-		outRoom.setLocation(200, 525);
+		add(outRoomBtn);
+		outRoomBtn.setFont(new Font("Noto Sans KR", Font.BOLD, 20));
+		outRoomBtn.setSize(165, 30);
+		outRoomBtn.setLocation(200, 525);
 
 	}
 
 	private void addEventListener() {
+		outRoomBtn.addActionListener(this);
+		messageBtn.addActionListener(this);
+	}
 
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == outRoomBtn) {
+			mContext.clickOutRoomBtn(roomName);
+		}
 	}
 
 }

@@ -41,6 +41,7 @@ public class User extends Thread implements ProtocolImpl {
 	private String protocol;
 	private String from; // userId or roomName
 	private String data;
+	private String msg; // roomMsg에서는 토큰이 4개까지도 가능
 
 	public User(Server mContext, Socket socket) {
 		try {
@@ -106,13 +107,16 @@ public class User extends Thread implements ProtocolImpl {
 	}
 
 	public void logOutUser() {
+		mContext.outUserFromRoom(currentRoom, this);
 		mContext.removeUser(this);
 		mContext.broadCast("logOutUser/" + userId);
 	}
 
+	/**
+	 * 읽기용 쓰레드<br>
+	 */
 	@Override
 	public void run() {
-		// ReadThread
 		String msg;
 		try {
 			while ((msg = reader.readLine()) != null) {
@@ -123,9 +127,6 @@ public class User extends Thread implements ProtocolImpl {
 			JOptionPane.showInternalMessageDialog(null, "접속 종료 !", "알림", JOptionPane.ERROR_MESSAGE);
 		} finally {
 			mContext.logMessage("[접속] " + userId + "님의 접속이 종료됨.\n");
-			// TODO 방에서 나가는 코드
-
-			// TODO 서버에서 유저가 나가는 코드
 			logOutUser();
 		}
 	}
@@ -137,22 +138,42 @@ public class User extends Thread implements ProtocolImpl {
 		StringTokenizer tokenizer = new StringTokenizer(str, "/");
 		protocol = tokenizer.nextToken();
 		from = tokenizer.nextToken();
-		
+
 		switch (protocol) {
 		case "newRoom":
 			data = tokenizer.nextToken();
 			newRoom();
 			break;
+		case "enterRoom":
+			data = tokenizer.nextToken();
+			enterRoom();
+			break;
+
+		// 방 메세지 프로토콜
+		case "roomMsg":
+			data = tokenizer.nextToken();
+			if (tokenizer.hasMoreTokens()) {
+				msg = tokenizer.nextToken();
+			}
+			roomMsg();
+			break;
+
+		// 방 나가기 프로토콜
+		case "outRoom":
+			outRoom();
+			break;
+
 		}
 	}
 
+	// 새로운 방 생성시 호출
 	@Override
 	public void newRoom() {
 		for (int i = 0; i < mContext.getRoomList().size(); i++) {
 			Room room = mContext.getRoomList().elementAt(i);
 			if (room.getRoomName().equals(from)) {
-				writer.println("FailNewRoom/" + from);
 				mContext.logMessage("[알림] 방 생성 실패 " + userId + "_" + from + "\n");
+				writer.println("FailNewRoom/" + from);
 				return;
 			}
 		}
@@ -160,7 +181,53 @@ public class User extends Thread implements ProtocolImpl {
 		mContext.getRoomList().add(new Room(from, Integer.parseInt(data), this));
 		mContext.logMessage("[알림] 방 생성 " + userId + "_" + from + "\n");
 		mContext.broadCast("newRoom/" + from + "/" + data);
-		writer.println("SuccessNewRoom/" + from);
+		writer.println("successNewRoom/" + from);
+	}
+
+	@Override
+	public void enterRoom() {
+		for (int i = 0; i < mContext.getRoomList().size(); i++) {
+			Room room = mContext.getRoomList().elementAt(i);
+			// 방이름과 비밀번호가 매치된다면
+			if (room.getRoomName().equals(from) && room.getPassWord() == Integer.parseInt(data)) {
+				currentRoom = from;
+				room.getUserList().add(this);
+				mContext.logMessage("[알림] 방 입장 " + userId + "_" + from + "\n");
+				writer.println("enterRoom/" + from);
+				room.roomBroadCast("roomMsg/" + from + "/" + userId + "/입장");
+				return;
+			}
+		}
+		mContext.logMessage("[알림] 방 입장 실패" + userId + "_" + from + "\n");
+		writer.println("FailEnterRoom/" + from);
+	}
+
+	@Override
+	public void roomMsg() {
+		mContext.logMessage("[메세지] " + from + "에서 " + data + " : " + msg);
+		for (int i = 0; i < mContext.getRoomList().size(); i++) {
+			Room room = mContext.getRoomList().elementAt(i);
+			// 방이름이 매치된다면
+			if (room.getRoomName().equals(from)) {
+				room.roomBroadCast("roomMsg/" + from + "/" + userId + "/" + msg);
+				return;
+			}
+		}
+	}
+
+	@Override
+	public void outRoom() {
+		for (int i = 0; i < mContext.getRoomList().size(); i++) {
+			Room room = mContext.getRoomList().elementAt(i);
+			if (room.getRoomName().equals(from)) {
+				currentRoom = null;
+				room.getUserList().remove(this);
+				mContext.logMessage("[알림] 방 퇴장 " + userId + "_" + from + "\n");
+				writer.println("outRoom/" + from);
+				room.roomBroadCast("roomMsg/" + from + "/" + userId + "/퇴장");
+				return;
+			}
+		}
 	}
 
 }

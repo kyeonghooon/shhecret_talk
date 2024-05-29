@@ -73,6 +73,7 @@ public class ClientUserListPanel extends JPanel {
 
 		// 유저 리스트 (스크롤)
 		add(scrollPane);
+		userList.setFont(new Font("Noto Sans KR", Font.BOLD, 15));
 		scrollPane.setBorder(new LineBorder(Color.BLACK, 2));
 		scrollPane.setSize(350, 380);
 		scrollPane.setLocation(15, 50);
