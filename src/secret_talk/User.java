@@ -151,7 +151,7 @@ public class User extends Thread implements ProtocolImpl {
 
 		// 방 메세지 프로토콜
 		case "roomMsg":
-			data = tokenizer.nextToken();
+			data = tokenizer.nextToken(); // 보내준 id
 			if (tokenizer.hasMoreTokens()) {
 				msg = tokenizer.nextToken();
 			}
@@ -163,7 +163,23 @@ public class User extends Thread implements ProtocolImpl {
 			outRoom();
 			break;
 
+		// 메세지 프로토콜
+		case "personalMsg":
+			data = tokenizer.nextToken(); // 보내줄 id
+			msg = tokenizer.nextToken(); // msg
+			personalMsg();
+			break;
+		case "groupMsg":
+			data = tokenizer.nextToken(); // msg
+			groupMsg();
+			break;
+
 		}
+		// 프로토콜 체크 끝나면 변수를 비움
+		protocol = null;
+		from = null;
+		data = null;
+		msg = null;
 	}
 
 	// 새로운 방 생성시 호출
@@ -212,6 +228,28 @@ public class User extends Thread implements ProtocolImpl {
 				room.roomBroadCast("roomMsg/" + from + "/" + userId + "/" + msg);
 				return;
 			}
+		}
+	}
+
+	@Override
+	public void personalMsg() {
+		// data : 보내줄 id
+		for (int i = 0; i < mContext.getUserList().size(); i++) {
+			User user = mContext.getUserList().elementAt(i);
+			if (data.equals(user.getUserId())) {
+				user.getWriter().println("personalMsg/" + from + "/" + msg);
+				mContext.logMessage("[메세지] 개인 메세지 " + from + " -> " + data + " : " + msg + "\n");
+				return;
+			}
+		}
+	}
+
+	@Override
+	public void groupMsg() {
+		for (int i = 0; i < mContext.getUserList().size(); i++) {
+			User user = mContext.getUserList().elementAt(i);
+			user.getWriter().println("groupMsg/" + from + "/" + msg);
+			mContext.logMessage("[메세지] 단체 메세지 " + from + " : " + msg + "\n");
 		}
 	}
 

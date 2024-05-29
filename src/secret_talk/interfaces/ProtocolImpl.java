@@ -19,5 +19,14 @@ public interface ProtocolImpl {
 	void enterRoom();
 	void outRoom();
 	
+	/**
+	 * 방에서 주고 받는 모든 메세지, 알림 포함<br>
+	 */
 	void roomMsg();
+	
+	/**
+	 * 방 외부에서 주고 받는 메세지<br>
+	 */
+	void personalMsg();
+	void groupMsg();
 }

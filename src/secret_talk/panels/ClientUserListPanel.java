@@ -2,6 +2,8 @@ package secret_talk.panels;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -17,7 +19,7 @@ import secret_talk.Client;
 
 @Getter
 @Setter
-public class ClientUserListPanel extends JPanel {
+public class ClientUserListPanel extends JPanel implements ActionListener{
 	
 	private Client mContext;
 
@@ -104,7 +106,23 @@ public class ClientUserListPanel extends JPanel {
 	}
 
 	private void addEventListener() {
+		personalMsgBtn.addActionListener(this);
+		groupMsgBtn.addActionListener(this);
+	}
 
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == personalMsgBtn) {
+			String id = userList.getSelectedValue();
+			String msg = messageField.getText();
+			mContext.clickPersonalMsgBtn(id, msg);
+			userList.setSelectedValue(null, false);
+			messageField.setText("");
+		} else if (e.getSource() == groupMsgBtn) {
+			String msg = messageField.getText();
+			mContext.clickGroupMsgBtn(msg);
+			messageField.setText("");
+		}
 	}
 
 }

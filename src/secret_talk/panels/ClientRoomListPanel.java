@@ -74,7 +74,6 @@ public class ClientRoomListPanel extends JPanel implements ActionListener {
 		// 상호작용 버튼
 		newRoomBtn = new JButton("방 만들기");
 		enterRoomBtn = new JButton("입장");
-		// roomOutBtn = new JButton("방 나가기");
 
 		// 안내 문구
 		infoLabel = new JLabel("※ 비밀번호는 4자리의 숫자입니다.");

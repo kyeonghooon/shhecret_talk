@@ -15,7 +15,7 @@ import secret_talk.panels.ServerFrame;
 
 @Getter
 @Setter
-public class Server implements CallBackServerService{
+public class Server implements CallBackServerService {
 
 	// 유저 리스트
 	private Vector<User> userList = new Vector<>();
@@ -105,8 +105,7 @@ public class Server implements CallBackServerService{
 			(userList.elementAt(i)).getWriter().println(msg);
 		}
 	}
-	
-	
+
 	// 방에서 유저를 강제로 빼는 메서드 - 클라이언트가 사라졌을때만 호출됨
 	public void outUserFromRoom(String roomName, User user) {
 		if (roomName == null) {
@@ -119,7 +118,7 @@ public class Server implements CallBackServerService{
 			}
 		}
 	}
-	
+
 	// 버튼 상호작용 콜백 메서드
 	@Override
 	public void clickKickBtn(String userId) {
@@ -137,10 +136,31 @@ public class Server implements CallBackServerService{
 			}
 		}
 	}
-	
-	// 테스트 코드
-		public static void main(String[] args) {
-			Server server = new Server();
-			server.openFrame();
+
+	@Override
+	public void clickPersonalMsgBtn(String id, String msg) {
+		for (int i = 0; i < userList.size(); i++) {
+			User user = userList.elementAt(i);
+			if (id.equals(user.getUserId())) {
+				user.getWriter().println("personalMsg/" + "서버관리자/" + msg);
+				logMessage("[메세지] 개인 메세지 : 서버관리자 -> " + id + " : " + msg + "\n");
+				return;
+			}
 		}
+	}
+
+	@Override
+	public void clickGroupMsgBtn(String msg) {
+		for (int i = 0; i < userList.size(); i++) {
+			User user = userList.elementAt(i);
+			user.getWriter().println("groupMsg/" + "서버관리자/" + msg);
+			logMessage("[메세지] 단체 메세지 : 서버관리자  : " + msg + "\n");
+		}
+	}
+
+	// 테스트 코드
+	public static void main(String[] args) {
+		Server server = new Server();
+		server.openFrame();
+	}
 }

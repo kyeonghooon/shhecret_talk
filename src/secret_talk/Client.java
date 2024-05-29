@@ -190,6 +190,16 @@ public class Client implements ProtocolImpl, CallBackClientService {
 			roomMsg();
 			break;
 
+		// 메세지 프로토콜
+		case "personalMsg":
+			data = tokenizer.nextToken(); // msg
+			personalMsg();
+			break;
+		case "groupMsg":
+			data = tokenizer.nextToken(); // msg
+			groupMsg();
+			break;
+
 		// 방 나가기 프로토콜
 		case "outRoom":
 			outRoom();
@@ -280,7 +290,17 @@ public class Client implements ProtocolImpl, CallBackClientService {
 
 		roomPanel.getChatArea().append(data + " : " + msg + "\n");
 	}
-
+	
+	@Override
+	public void personalMsg() {
+		// TODO 개인 메세지 창 띄움
+	}
+	
+	@Override
+	public void groupMsg() {
+		// TODO 단체 메세지 창 띄움
+	}
+	
 	// 방 나가기 시 호출
 	@Override
 	public void outRoom() {
@@ -310,6 +330,16 @@ public class Client implements ProtocolImpl, CallBackClientService {
 	@Override
 	public void clickRoomMsgBtn(String roomName, String msg) {
 		writer.println("roomMsg/" + roomName + "/" + myId + "/" + msg);
+	}
+
+	@Override
+	public void clickPersonalMsgBtn(String id, String msg) {
+		writer.println("personalMsg/" + myId + "/" + id + "/" + msg);
+	}
+
+	@Override
+	public void clickGroupMsgBtn(String msg) {
+		writer.println("groupMsg/" + myId + "/" + msg);
 	}
 
 	// 테스트 코드

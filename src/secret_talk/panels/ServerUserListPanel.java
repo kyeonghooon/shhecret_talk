@@ -19,7 +19,7 @@ import secret_talk.Server;
 
 @Getter
 @Setter
-public class ServerUserListPanel extends JPanel{
+public class ServerUserListPanel extends JPanel implements ActionListener{
 	
 	private Server mContext;
 	
@@ -125,12 +125,25 @@ public class ServerUserListPanel extends JPanel{
 	}
 
 	private void addEventListener() {
-		kickBtn.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				mContext.clickKickBtn(userList.getSelectedValue());
-			}
-		});
+		kickBtn.addActionListener(this);
+		personalMsgBtn.addActionListener(this);
+		groupMsgBtn.addActionListener(this);
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == kickBtn) {
+			mContext.clickKickBtn(userList.getSelectedValue());
+		} else if (e.getSource() == personalMsgBtn) {
+			String id = userList.getSelectedValue();
+			String msg = messageField.getText();
+			mContext.clickPersonalMsgBtn(id, msg);
+			userList.setSelectedValue(null, false);
+			messageField.setText("");
+		} else if (e.getSource() == groupMsgBtn) {
+			String msg = messageField.getText();
+			mContext.clickGroupMsgBtn(msg);
+			messageField.setText("");
+		}
 	}
 }

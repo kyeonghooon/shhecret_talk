@@ -21,3 +21,5 @@ outRoom : 방에서 나가기 -> 채팅방 사라짐, 방 생성, 입장 버튼 
 
 <메세지>
 roomMsg : 방에서 알림 메세지나 채팅을 주고 받을때
+personalMsg : 개인 메세지
+groupMsg : 전체 메세지
