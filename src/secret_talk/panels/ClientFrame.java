@@ -56,17 +56,17 @@ public class ClientFrame extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		// Frame -> root Panel
 		setTitle(" Secret Talk ");
-		setSize(400, (int)(400*1.618));
+		setSize(400, (int) (400 * 1.618));
 		setContentPane(backgroundLabel); // add 처리
 		setLayout(null); // 좌표값으로 배치
 		setResizable(false); // 프레임 조절 불가
 		setLocationRelativeTo(null); // JFrame을 모니터 가운데 자동 배치
-		
+
 		add(tabPane);
 		tabPane.setSize(getWidth(), getHeight());
 		tabPane.setLocation(0, 0);
 		tabPane.setFont(new Font("Noto Sans KR", Font.BOLD, 14));
-		
+
 		tabPane.addTab("유저 리스트", userListPanel);
 		tabPane.addTab("방 리스트", roomListPanel);
 	}
@@ -149,7 +149,12 @@ public class ClientFrame extends JFrame {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					String ip = inputIp.getText();
-					int port = Integer.parseInt(inputPort.getText());
+					String portStr = inputPort.getText();
+					if (ip.equals("") || portStr.equals("")) {
+						(new MessageFrame()).errorMsg("null");
+						return;
+					}
+					int port = Integer.parseInt(portStr);
 					mContext.connectServer(ip, port);
 					if (isConnected) {
 						setVisible(false);
@@ -218,7 +223,27 @@ public class ClientFrame extends JFrame {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					mContext.createId(inputId.getText());
+					String id = inputId.getText();
+					
+					// id입력란에 뭐라도 쳐야함
+					if (id.equals("")) {
+						(new MessageFrame()).errorMsg("null");
+						return;
+					}
+
+					// id로 공백을 넣을수 없음
+					if (id.contains("\s")) {
+						(new MessageFrame()).errorMsg("blank");
+						return;
+					}
+					
+					// id는 6글자 이하
+					if (id.length() > 6) {
+						(new MessageFrame()).errorMsg("letterOver");
+						return;
+					}
+					
+					mContext.createId(id);
 					if (mContext.checkId()) {
 						setVisible(false);
 						clientFrame.setVisible(true);

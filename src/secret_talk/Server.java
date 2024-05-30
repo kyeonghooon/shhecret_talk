@@ -87,7 +87,7 @@ public class Server implements CallBackServerService {
 		userIds.remove(user.getUserId());
 		serverFrame.getUserListPanel().getUserList().setListData(userIds);
 	}
-
+	
 	// id가 이미 사용중임을 확인
 	public boolean isNew(String userId) {
 		for (String string : userIds) {
@@ -115,6 +115,9 @@ public class Server implements CallBackServerService {
 			Room room = roomList.elementAt(i);
 			if (roomName.equals(room.getRoomName())) {
 				room.getUserList().remove(user);
+				if (room.getUserList().isEmpty()) {
+					user.removeRoom();
+				}
 			}
 		}
 	}
@@ -126,7 +129,7 @@ public class Server implements CallBackServerService {
 			User user = userList.elementAt(i);
 			if (userId.equals(user.getUserId())) {
 				try {
-					user.getWriter().println("kick/" + user.getId() + "/" + "서버 관리자에의해 퇴장처리 되었습니다.");
+					user.getWriter().println("kick/" + user.getId());
 					user.logOutUser();
 					// 소켓을 닫아버림
 					user.getSocket().close();

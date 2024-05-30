@@ -18,6 +18,8 @@ public interface ProtocolImpl {
 	void newRoom();
 	void enterRoom();
 	void outRoom();
+	// 방에 아무도 없다면 방 제거
+	void removeRoom();
 	
 	/**
 	 * 방에서 주고 받는 모든 메세지, 알림 포함<br>

@@ -115,11 +115,19 @@ public class ClientUserListPanel extends JPanel implements ActionListener{
 		if (e.getSource() == personalMsgBtn) {
 			String id = userList.getSelectedValue();
 			String msg = messageField.getText();
+			if ( id.equals("") || msg.equals("")) {
+				(new MessageFrame()).errorMsg("null");
+				return;
+			}
 			mContext.clickPersonalMsgBtn(id, msg);
 			userList.setSelectedValue(null, false);
 			messageField.setText("");
 		} else if (e.getSource() == groupMsgBtn) {
 			String msg = messageField.getText();
+			if (msg.equals("")) {
+				(new MessageFrame()).errorMsg("null");
+				return;
+			}
 			mContext.clickGroupMsgBtn(msg);
 			messageField.setText("");
 		}

@@ -124,7 +124,12 @@ public class ServerFrame extends JFrame {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					port = Integer.parseInt(inputPort.getText());
+					String portStr = inputPort.getText();
+					if (portStr.equals("")) {
+						(new MessageFrame()).errorMsg("null");
+						return;
+					}
+					port = Integer.parseInt(portStr);
 					mContext.setupServer(port);
 					setVisible(false);
 					serverFrame.setVisible(true);

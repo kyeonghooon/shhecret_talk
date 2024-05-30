@@ -17,6 +17,7 @@ import secret_talk.interfaces.CallBackClientService;
 import secret_talk.interfaces.ProtocolImpl;
 import secret_talk.panels.ClientFrame;
 import secret_talk.panels.ClientRoomPanel;
+import secret_talk.panels.MessageFrame;
 
 @Getter
 @Setter
@@ -45,6 +46,9 @@ public class Client implements ProtocolImpl, CallBackClientService {
 	// 유저 정보
 	private String myId;
 	private String myRoom;
+	
+	// 강퇴 확인
+	private boolean kick;
 
 	/**
 	 * 예시)<br>
@@ -69,8 +73,7 @@ public class Client implements ProtocolImpl, CallBackClientService {
 			clientFrame.setConnected(true);
 			setupStream();
 		} catch (IOException e) {
-			// TODO 오류 패널 제작
-			System.out.println("해당 주소, 포트에 연결할 수 없습니다.");
+			(new MessageFrame()).errorMsg("connectServer");
 		}
 	}
 
@@ -80,8 +83,6 @@ public class Client implements ProtocolImpl, CallBackClientService {
 			reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			writer = new PrintWriter(socket.getOutputStream(), true);
 		} catch (IOException e) {
-			// TODO 오류 패널 제작
-			e.printStackTrace();
 		}
 	}
 
@@ -101,13 +102,12 @@ public class Client implements ProtocolImpl, CallBackClientService {
 				readThread();
 				return true;
 			case "reject/":
-				// TODO 거절 메세지 출력
+				(new MessageFrame()).errorMsg("reject");
 				return false;
 			default:
 				break;
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
 		}
 		return false;
 	}
@@ -131,7 +131,11 @@ public class Client implements ProtocolImpl, CallBackClientService {
 					checkProtocol(msg);
 				}
 			} catch (IOException e) {
-				// TODO 에러 처리 - 서버가 사라졌을때 뜸 혹은 강퇴당했을지도
+				if (kick) {
+					(new MessageFrame()).errorMsg("kick");
+				} else {
+					(new MessageFrame()).errorMsg("serverNull");
+				}
 			}
 		}).start();
 	}
@@ -167,7 +171,7 @@ public class Client implements ProtocolImpl, CallBackClientService {
 			newRoom();
 			break;
 		case "FailNewRoom":
-			// TODO 방 이름 중복 메세지 띄움
+			(new MessageFrame()).errorMsg("roomNameUsed");
 			break;
 		case "successNewRoom":
 			successNewRoom();
@@ -178,7 +182,7 @@ public class Client implements ProtocolImpl, CallBackClientService {
 			enterRoom();
 			break;
 		case "FailEnterRoom":
-			// TODO 비밀번호 틀림 메세지 띄움
+			(new MessageFrame()).errorMsg("failEnterRoom");
 			break;
 
 		// 방 메세지 프로토콜
@@ -204,9 +208,11 @@ public class Client implements ProtocolImpl, CallBackClientService {
 		case "outRoom":
 			outRoom();
 			break;
+		case "removeRoom":
+			removeRoom();
+			break;
 		case "kick":
-			data = tokenizer.nextToken();
-			// TODO 강퇴 메세지 띄움
+			kick = true;
 			clientFrame.setVisible(false);
 			try {
 				socket.close();
@@ -293,12 +299,12 @@ public class Client implements ProtocolImpl, CallBackClientService {
 	
 	@Override
 	public void personalMsg() {
-		// TODO 개인 메세지 창 띄움
+		(new MessageFrame()).personalMsg(from, data);
 	}
 	
 	@Override
 	public void groupMsg() {
-		// TODO 단체 메세지 창 띄움
+		(new MessageFrame()).groupMsg(from, data);
 	}
 	
 	// 방 나가기 시 호출
@@ -309,6 +315,13 @@ public class Client implements ProtocolImpl, CallBackClientService {
 		getClientFrame().getTabPane().remove(roomPanel);
 		newRoomBtn.setEnabled(true);
 		enterRoomBtn.setEnabled(true);
+	}
+	
+	// 방 제거
+	@Override
+	public void removeRoom() {
+		roomNameList.remove(from);
+		roomList.setListData(roomNameList);
 	}
 
 	// 버튼 상호작용 콜백 메서드

@@ -133,15 +133,27 @@ public class ServerUserListPanel extends JPanel implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == kickBtn) {
-			mContext.clickKickBtn(userList.getSelectedValue());
+			String id = userList.getSelectedValue();
+			if ( id.equals("")) {
+				return;
+			}
+			mContext.clickKickBtn(id);
 		} else if (e.getSource() == personalMsgBtn) {
 			String id = userList.getSelectedValue();
 			String msg = messageField.getText();
+			if ( id.equals("") || msg.equals("")) {
+				(new MessageFrame()).errorMsg("null");
+				return;
+			}
 			mContext.clickPersonalMsgBtn(id, msg);
 			userList.setSelectedValue(null, false);
 			messageField.setText("");
 		} else if (e.getSource() == groupMsgBtn) {
 			String msg = messageField.getText();
+			if (msg.equals("")) {
+				(new MessageFrame()).errorMsg("null");
+				return;
+			}
 			mContext.clickGroupMsgBtn(msg);
 			messageField.setText("");
 		}

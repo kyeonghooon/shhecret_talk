@@ -7,8 +7,6 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.StringTokenizer;
 
-import javax.swing.JOptionPane;
-
 import lombok.Getter;
 import lombok.Setter;
 import secret_talk.interfaces.ProtocolImpl;
@@ -75,7 +73,7 @@ public class User extends Thread implements ProtocolImpl {
 			newUser(); // 신규 유저 등록
 			roomList();
 		} catch (IOException e) {
-			e.printStackTrace();
+			// id 입력을 받기전에 연결이 끊긴거라 따로 처리하지 않음
 		}
 	}
 
@@ -111,6 +109,18 @@ public class User extends Thread implements ProtocolImpl {
 		mContext.removeUser(this);
 		mContext.broadCast("logOutUser/" + userId);
 	}
+	
+	@Override
+	public void removeRoom() {
+		for (int i = 0; i < mContext.getRoomList().size(); i++) {
+			Room room = mContext.getRoomList().elementAt(i);
+			if (room.getRoomName().equals(currentRoom)) {
+				mContext.getRoomList().remove(room);
+				mContext.getRoomNames().remove(currentRoom);
+				mContext.broadCast("removeRoom/" + currentRoom);
+			}
+		}
+	}
 
 	/**
 	 * 읽기용 쓰레드<br>
@@ -123,8 +133,8 @@ public class User extends Thread implements ProtocolImpl {
 				checkProtocol(msg);
 			}
 		} catch (IOException e) {
-			// TODO 메세지용 패널 만들 예정
-			JOptionPane.showInternalMessageDialog(null, "접속 종료 !", "알림", JOptionPane.ERROR_MESSAGE);
+			// 접속이 종료 되었을때 창을 띄우기에는 나갈때 마다 떠서 너무 불편함
+			// 따라서 로그에만 기록하고 띄우지 않음
 		} finally {
 			mContext.logMessage("[접속] " + userId + "님의 접속이 종료됨.\n");
 			logOutUser();
@@ -195,6 +205,7 @@ public class User extends Thread implements ProtocolImpl {
 		}
 		currentRoom = from;
 		mContext.getRoomList().add(new Room(from, Integer.parseInt(data), this));
+		mContext.getRoomNames().add(from);
 		mContext.logMessage("[알림] 방 생성 " + userId + "_" + from + "\n");
 		mContext.broadCast("newRoom/" + from + "/" + data);
 		writer.println("successNewRoom/" + from);
@@ -258,11 +269,14 @@ public class User extends Thread implements ProtocolImpl {
 		for (int i = 0; i < mContext.getRoomList().size(); i++) {
 			Room room = mContext.getRoomList().elementAt(i);
 			if (room.getRoomName().equals(from)) {
-				currentRoom = null;
 				room.getUserList().remove(this);
 				mContext.logMessage("[알림] 방 퇴장 " + userId + "_" + from + "\n");
 				writer.println("outRoom/" + from);
 				room.roomBroadCast("roomMsg/" + from + "/" + userId + "/퇴장");
+				if (room.getUserList().isEmpty()) {
+					removeRoom();
+				}
+				currentRoom = null;
 				return;
 			}
 		}

@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -114,6 +116,16 @@ public class ClientRoomPanel extends JPanel implements ActionListener {
 	private void addEventListener() {
 		outRoomBtn.addActionListener(this);
 		messageBtn.addActionListener(this);
+		addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					String msg = messageField.getText();
+					mContext.clickRoomMsgBtn(roomName, msg);
+					messageField.setText("");
+				}
+			}
+		});
 	}
 
 	@Override
@@ -122,6 +134,10 @@ public class ClientRoomPanel extends JPanel implements ActionListener {
 			mContext.clickOutRoomBtn(roomName);
 		} else if (e.getSource() == messageBtn) {
 			String msg = messageField.getText();
+			if (msg.equals("")) {
+				(new MessageFrame()).errorMsg("null");
+				return;
+			}
 			mContext.clickRoomMsgBtn(roomName, msg);
 			messageField.setText("");
 		}

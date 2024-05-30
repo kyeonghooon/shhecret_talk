@@ -158,16 +158,41 @@ public class ClientRoomListPanel extends JPanel implements ActionListener {
 		if (e.getSource() == newRoomBtn) {
 			String roomName = roomNameField.getText();
 			String password = passwordField.getText();
-			int passwordInt = Integer.parseInt(password);
-			if ((999 < passwordInt && passwordInt < 10000) || password.equals("")) {
+			if (roomName.equals("")) {
+				(new MessageFrame()).errorMsg("null");
+				return;
+			}
+			if (roomName.length() > 10) {
+				(new MessageFrame()).errorMsg("roomNameOver");
+				return;
+			}
+			
+			// 비밀번호가 없을때
+			if (password.equals("")) {
+				password = "0";
 				mContext.clickNewRoomBtn(roomName, password);
 				roomNameField.setText("");
 				passwordField.setText("");
+			} else {
+				int passwordInt = Integer.parseInt(password);
+				if ((999 < passwordInt && passwordInt < 10000)) {
+					mContext.clickNewRoomBtn(roomName, password);
+					roomNameField.setText("");
+					passwordField.setText("");
+				}
 			}
 		} else if (e.getSource() == enterRoomBtn) {
 			String roomName = roomNameField.getText();
+			if (roomName.equals("")) {
+				return;
+			}
 			String password = passwordField.getText();
+			if (password.equals("")) {
+				password = "0";
+			}
 			mContext.clickEnterRoomBtn(roomName, password);
+			roomNameField.setText("");
+			passwordField.setText("");
 		}
 	}
 
