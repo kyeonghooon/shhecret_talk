@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.StringTokenizer;
+import java.util.Vector;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -29,6 +30,7 @@ public class User extends Thread implements ProtocolImpl {
 	// 변수
 	private String userId;
 	private String currentRoom;
+	private Vector<String> rooms = new Vector<>();
 
 	/**
 	 * 예시)<br>
@@ -105,7 +107,10 @@ public class User extends Thread implements ProtocolImpl {
 	}
 
 	public void logOutUser() {
-		mContext.outUserFromRoom(currentRoom, this);
+		for (int i = 0; i < rooms.size(); i++) {
+			String roomName = rooms.elementAt(i);
+			mContext.outUserFromRoom(roomName, this);
+		}
 		mContext.removeUser(this);
 		mContext.broadCast("logOutUser/" + userId);
 	}
@@ -114,10 +119,13 @@ public class User extends Thread implements ProtocolImpl {
 	public void removeRoom() {
 		for (int i = 0; i < mContext.getRoomList().size(); i++) {
 			Room room = mContext.getRoomList().elementAt(i);
-			if (room.getRoomName().equals(currentRoom)) {
-				mContext.getRoomList().remove(room);
-				mContext.getRoomNames().remove(currentRoom);
-				mContext.broadCast("removeRoom/" + currentRoom);
+			for (int j = 0; j < rooms.size(); j++) {
+				String roomName = rooms.elementAt(i);
+				if (room.getRoomName().equals(roomName)) {
+					mContext.getRoomList().remove(room);
+					mContext.getRoomNames().remove(roomName);
+					mContext.broadCast("removeRoom/" + roomName);
+				}
 			}
 		}
 	}
@@ -130,6 +138,8 @@ public class User extends Thread implements ProtocolImpl {
 		String msg;
 		try {
 			while ((msg = reader.readLine()) != null) {
+				// 확인용 코드
+				System.out.println(msg);
 				checkProtocol(msg);
 			}
 		} catch (IOException e) {
@@ -203,7 +213,7 @@ public class User extends Thread implements ProtocolImpl {
 				return;
 			}
 		}
-		currentRoom = from;
+		rooms.add(from);
 		mContext.getRoomList().add(new Room(from, Integer.parseInt(data), this));
 		mContext.getRoomNames().add(from);
 		mContext.logMessage("[알림] 방 생성 " + userId + "_" + from + "\n");
@@ -217,7 +227,7 @@ public class User extends Thread implements ProtocolImpl {
 			Room room = mContext.getRoomList().elementAt(i);
 			// 방이름과 비밀번호가 매치된다면
 			if (room.getRoomName().equals(from) && room.getPassWord() == Integer.parseInt(data)) {
-				currentRoom = from;
+				rooms.add(from);
 				room.getUserList().add(this);
 				mContext.logMessage("[알림] 방 입장 " + userId + "_" + from + "\n");
 				writer.println("enterRoom/" + from);
@@ -276,7 +286,7 @@ public class User extends Thread implements ProtocolImpl {
 				if (room.getUserList().isEmpty()) {
 					removeRoom();
 				}
-				currentRoom = null;
+				rooms.remove(from);
 				return;
 			}
 		}

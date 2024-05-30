@@ -31,7 +31,6 @@ public class ClientRoomListPanel extends JPanel implements ActionListener {
 	private JLabel textLabelList;
 	private JScrollPane scrollPane;
 	private JList<String> roomList;
-	private JScrollPane scrollPaneIcon;
 
 	// 방이름 컴포넌트
 	private JLabel textLabelRoom;
@@ -149,7 +148,10 @@ public class ClientRoomListPanel extends JPanel implements ActionListener {
 		roomList.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				roomNameField.setText(roomList.getSelectedValue());
+				if (roomList.getSelectedValue() != null) {
+					String[] roomName = roomList.getSelectedValue().split("]");
+					roomNameField.setText(roomName[1]);
+				}
 			}
 		});
 	}
@@ -192,6 +194,7 @@ public class ClientRoomListPanel extends JPanel implements ActionListener {
 				password = mContext.PW_NULL;
 			}
 			mContext.clickEnterRoomBtn(roomName, password);
+			roomList.setSelectedValue(null, false);
 			roomNameField.setText("");
 			passwordField.setText("");
 		}

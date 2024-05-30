@@ -121,6 +121,11 @@ public class MessageFrame extends JFrame{
 			msgBoard.append("방이름과 비밀번호를 다시 확인해주세요");
 			imgLabel.setIcon(new ImageIcon("images/reject.png"));
 			break;
+		case "enteredRoom":
+			textLabel.setText("방 입장 불가");
+			msgBoard.append("이미 입장한 방입니다.");
+			imgLabel.setIcon(new ImageIcon("images/reject.png"));
+			break;
 		case "null":
 			textLabel.setText("빈칸 입력 불가");
 			msgBoard.append("텍스트 필드에 아무것도 입력되지 않았습니다.");

@@ -32,7 +32,7 @@ public class Client implements ProtocolImpl, CallBackClientService {
 
 	// 프레임 관련 참조 변수
 	private ClientFrame clientFrame;
-	private ClientRoomPanel roomPanel;
+	private Vector<ClientRoomPanel> roomPanels = new Vector<>();
 	// 상호작용 가능한 컴포넌트
 	private JList<String> userList;
 	private JList<String> roomList;
@@ -46,6 +46,7 @@ public class Client implements ProtocolImpl, CallBackClientService {
 	// 유저 정보
 	private String myId;
 	private String myRoom;
+	private Vector<String> myRooms = new Vector<>();
 	
 	// 강퇴 확인
 	private boolean kick;
@@ -129,7 +130,7 @@ public class Client implements ProtocolImpl, CallBackClientService {
 			try {
 				String msg;
 				while ((msg = reader.readLine()) != null) {
-					// TODO 삭제 예정 확인용 코드
+					// 확인용 코드
 					System.out.println(msg);
 					checkProtocol(msg);
 				}
@@ -268,10 +269,9 @@ public class Client implements ProtocolImpl, CallBackClientService {
 	}
 
 	public void successNewRoom() {
-		myRoom = from;
-		newRoomBtn.setEnabled(false);
-		enterRoomBtn.setEnabled(false);
-		roomPanel = new ClientRoomPanel(this, from);
+		myRooms.add(from);
+		ClientRoomPanel roomPanel = new ClientRoomPanel(this, from);
+		roomPanels.add(roomPanel);
 		clientFrame.getTabPane().addTab(from, roomPanel);
 		clientFrame.getTabPane().setSelectedComponent(roomPanel);
 	}
@@ -279,10 +279,11 @@ public class Client implements ProtocolImpl, CallBackClientService {
 	// 방 입장 성공시 호출
 	@Override
 	public void enterRoom() {
-		myRoom = from;
+		myRooms.add(from);
 		newRoomBtn.setEnabled(false);
 		enterRoomBtn.setEnabled(false);
-		roomPanel = new ClientRoomPanel(this, from);
+		ClientRoomPanel roomPanel = new ClientRoomPanel(this, from);
+		roomPanels.add(roomPanel);
 		clientFrame.getTabPane().addTab(from, roomPanel);
 		clientFrame.getTabPane().setSelectedComponent(roomPanel);
 	}
@@ -292,17 +293,32 @@ public class Client implements ProtocolImpl, CallBackClientService {
 	public void roomMsg() {
 		// data : userId, msg : 메세지
 		if (msg.equals("입장")) {
-			roomPanel.getChatArea().append(data + "님이 입장 하셨습니다\n");
-			return;
+			for (int i = 0; i < roomPanels.size(); i++) {
+				ClientRoomPanel roomPanel = roomPanels.elementAt(i);
+				if (from.equals(roomPanel.getRoomName())) {
+					roomPanel.getChatArea().append(data + "님이 입장 하셨습니다\n");
+					return;
+				}
+			}
 		} else if (msg.equals("퇴장")) {
-			roomPanel.getChatArea().append(data + "님이 퇴장 하셨습니다\n");
-			return;
+			for (int i = 0; i < roomPanels.size(); i++) {
+				ClientRoomPanel roomPanel = roomPanels.elementAt(i);
+				if (from.equals(roomPanel.getRoomName())) {
+					roomPanel.getChatArea().append(data + "님이 퇴장 하셨습니다\n");
+					return;
+				}
+			}
 		}
 		if (data.equals(myId)) {
 			data = "나";
 		}
-
-		roomPanel.getChatArea().append(data + " : " + msg + "\n");
+		for (int i = 0; i < roomPanels.size(); i++) {
+			ClientRoomPanel roomPanel = roomPanels.elementAt(i);
+			if (from.equals(roomPanel.getRoomName())) {
+				roomPanel.getChatArea().append(data + " : " + msg + "\n");
+				return;
+			}
+		}
 	}
 	
 	@Override
@@ -318,9 +334,15 @@ public class Client implements ProtocolImpl, CallBackClientService {
 	// 방 나가기 시 호출
 	@Override
 	public void outRoom() {
-		myRoom = null;
+		myRooms.remove(from);
 		getClientFrame().getTabPane().setSelectedIndex(2);
-		getClientFrame().getTabPane().remove(roomPanel);
+		for (int i = 0; i < roomPanels.size(); i++) {
+			ClientRoomPanel roomPanel = roomPanels.elementAt(i);
+			if (from.equals(roomPanel.getRoomName())) {
+				getClientFrame().getTabPane().remove(roomPanel);
+				break;
+			}
+		}
 		newRoomBtn.setEnabled(true);
 		enterRoomBtn.setEnabled(true);
 	}
@@ -341,6 +363,12 @@ public class Client implements ProtocolImpl, CallBackClientService {
 
 	@Override
 	public void clickEnterRoomBtn(String roomName, String password) {
+		for (int i = 0; i < myRooms.size(); i++) {
+			if (roomName.equals(myRooms.elementAt(i))) {
+				(new MessageFrame()).errorMsg("enteredRoom");
+				return;
+			}
+		}
 		writer.println("enterRoom/" + roomName + "/" + password);
 	}
 
