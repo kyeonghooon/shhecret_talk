@@ -31,6 +31,7 @@ public class ClientRoomListPanel extends JPanel implements ActionListener {
 	private JLabel textLabelList;
 	private JScrollPane scrollPane;
 	private JList<String> roomList;
+	private JScrollPane scrollPaneIcon;
 
 	// 방이름 컴포넌트
 	private JLabel textLabelRoom;
@@ -99,7 +100,7 @@ public class ClientRoomListPanel extends JPanel implements ActionListener {
 		scrollPane.setBorder(new LineBorder(Color.BLACK, 2));
 		scrollPane.setSize(350, 380);
 		scrollPane.setLocation(15, 50);
-
+		
 		// 방 이름 입력 텍스트 라벨
 		add(textLabelRoom);
 		textLabelRoom.setFont(new Font("Noto Sans KR", Font.BOLD, 20));
@@ -169,7 +170,7 @@ public class ClientRoomListPanel extends JPanel implements ActionListener {
 			
 			// 비밀번호가 없을때
 			if (password.equals("")) {
-				password = "0";
+				password = mContext.PW_NULL;
 				mContext.clickNewRoomBtn(roomName, password);
 				roomNameField.setText("");
 				passwordField.setText("");
@@ -188,7 +189,7 @@ public class ClientRoomListPanel extends JPanel implements ActionListener {
 			}
 			String password = passwordField.getText();
 			if (password.equals("")) {
-				password = "0";
+				password = mContext.PW_NULL;
 			}
 			mContext.clickEnterRoomBtn(roomName, password);
 			roomNameField.setText("");

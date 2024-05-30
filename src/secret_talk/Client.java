@@ -49,6 +49,9 @@ public class Client implements ProtocolImpl, CallBackClientService {
 	
 	// 강퇴 확인
 	private boolean kick;
+	
+	// 리터럴
+	public final String PW_NULL = "0";
 
 	/**
 	 * 예시)<br>
@@ -168,6 +171,7 @@ public class Client implements ProtocolImpl, CallBackClientService {
 
 		// 방 생성과 관련된 프로토콜
 		case "newRoom":
+			data = tokenizer.nextToken(); // password
 			newRoom();
 			break;
 		case "FailNewRoom":
@@ -255,7 +259,11 @@ public class Client implements ProtocolImpl, CallBackClientService {
 	// 새로운 방 생성시 호출
 	@Override
 	public void newRoom() {
-		roomNameList.add(from);
+		if (data.equals(PW_NULL)) {
+			roomNameList.add("[공개]" + from);
+		} else {
+			roomNameList.add("[비밀]" + from);
+		}
 		roomList.setListData(roomNameList);
 	}
 
@@ -320,7 +328,8 @@ public class Client implements ProtocolImpl, CallBackClientService {
 	// 방 제거
 	@Override
 	public void removeRoom() {
-		roomNameList.remove(from);
+		roomNameList.remove("[공개]" + from);
+		roomNameList.remove("[비밀]" + from);
 		roomList.setListData(roomNameList);
 	}
 
