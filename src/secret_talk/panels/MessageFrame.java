@@ -66,20 +66,22 @@ public class MessageFrame extends JFrame{
 	public void personalMsg(String fromId, String msg) {
 		textLabel.setText(fromId + "으로 부터온 개인 메세지");
 		msgBoard.append(msg);
+		imgLabel.setIcon(new ImageIcon("images/msg.png"));
 		setVisible(true);
 	}
 	public void groupMsg(String fromId, String msg) {
 		textLabel.setText(fromId + "으로 부터온 단체 메세지");
 		msgBoard.append(msg);
+		imgLabel.setIcon(new ImageIcon("images/msg.png"));
 		setVisible(true);
 	}
 	public void errorMsg(String error) {
 		switch (error) {
-		case "test":
-			textLabel.setText("테스트용 에러 메세지입니다 몇글자 까지 가능할까요");
-			msgBoard.append("테스트용 에러 메세지입니다");
-			imgLabel.setIcon(new ImageIcon("images/error.png"));
-			break;
+//		case "test":
+//			textLabel.setText("테스트용 에러 메세지입니다 몇글자 까지 가능할까요");
+//			msgBoard.append("테스트용 에러 메세지입니다");
+//			imgLabel.setIcon(new ImageIcon("images/error.png"));
+//			break;
 		case "connectServer" :
 			textLabel.setText("서버 연결 불가");
 			msgBoard.append("ip주소, port 번호를 다시 확인해주세요\n");
@@ -88,7 +90,7 @@ public class MessageFrame extends JFrame{
 			break;
 		case "serverNull":
 			textLabel.setText("서버를 찾을 수 없음");
-			msgBoard.append("서버로 부터 접속이 끊겼습니다.\n");
+			msgBoard.append("서버로부터 접속이 끊겼습니다.\n");
 			imgLabel.setIcon(new ImageIcon("images/error.png"));
 			break;
 		case "reject":
@@ -131,6 +133,11 @@ public class MessageFrame extends JFrame{
 			msgBoard.append("텍스트 필드에 아무것도 입력되지 않았습니다.");
 			imgLabel.setIcon(new ImageIcon("images/reject.png"));
 			break;
+		case "self":
+			textLabel.setText("메세지 전송 불가");
+			msgBoard.append("자기 자신에게 메세지를 보낼 수 없습니다.");
+			imgLabel.setIcon(new ImageIcon("images/reject.png"));
+			break;
 		case "kick":
 			textLabel.setText("추 방");
 			msgBoard.append("서버관리자로 부터 추방 되었습니다.");
@@ -138,14 +145,6 @@ public class MessageFrame extends JFrame{
 			break;
 		}
 		setVisible(true);
-	}
-
-	
-
-	// 테스트 코드
-	public static void main(String[] args) {
-		MessageFrame frame =  new MessageFrame();
-		frame.errorMsg("test");
 	}
 
 }

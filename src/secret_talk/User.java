@@ -99,33 +99,41 @@ public class User extends Thread implements ProtocolImpl {
 
 	// 방 리스트 전송
 	public void roomList() {
-		mContext.getRoomNames();
-		for (int i = 0; i < mContext.getRoomNames().size(); i++) {
-			String str = mContext.getRoomNames().elementAt(i);
-			writer.println("roomList/" + str);
+		for (int i = 0; i < mContext.getRoomList().size(); i++) {
+			String roomName = mContext.getRoomList().elementAt(i).getRoomName();
+			String password = mContext.getRoomList().elementAt(i).getPassWord() + "";
+			writer.println("roomList/" + roomName + "/" + password);
 		}
 	}
 
 	public void logOutUser() {
-		for (int i = 0; i < rooms.size(); i++) {
-			String roomName = rooms.elementAt(i);
-			mContext.outUserFromRoom(roomName, this);
+		while(!rooms.isEmpty()) {
+			String roomName = rooms.elementAt(0);
+			Room room = findRoom(roomName);
+			if (room != null) {
+				room.getUserList().remove(this);
+				mContext.logMessage("[알림] 방 퇴장 " + userId + "_" + roomName + "\n");
+				writer.println("outRoom/" + roomName);
+				room.roomBroadCast("roomMsg/" + roomName + "/" + userId + "/퇴장");
+				if (room.getUserList().isEmpty()) {
+					removeRoom();
+				}
+				rooms.remove(0);
+				System.out.println("a");
+			}
 		}
 		mContext.removeUser(this);
 		mContext.broadCast("logOutUser/" + userId);
 	}
-	
+
 	@Override
 	public void removeRoom() {
-		for (int i = 0; i < mContext.getRoomList().size(); i++) {
-			Room room = mContext.getRoomList().elementAt(i);
-			for (int j = 0; j < rooms.size(); j++) {
-				String roomName = rooms.elementAt(i);
-				if (room.getRoomName().equals(roomName)) {
-					mContext.getRoomList().remove(room);
-					mContext.getRoomNames().remove(roomName);
-					mContext.broadCast("removeRoom/" + roomName);
-				}
+		for (Room room : mContext.getRoomList()) {
+			if (room.getUserList().isEmpty()) {
+				String roomName = room.getRoomName();
+				mContext.getRoomList().remove(room);
+				mContext.getRoomNames().remove(roomName);
+				mContext.broadCast("removeRoom/" + roomName);
 			}
 		}
 	}
@@ -205,13 +213,10 @@ public class User extends Thread implements ProtocolImpl {
 	// 새로운 방 생성시 호출
 	@Override
 	public void newRoom() {
-		for (int i = 0; i < mContext.getRoomList().size(); i++) {
-			Room room = mContext.getRoomList().elementAt(i);
-			if (room.getRoomName().equals(from)) {
-				mContext.logMessage("[알림] 방 생성 실패 " + userId + "_" + from + "\n");
-				writer.println("FailNewRoom/" + from);
-				return;
-			}
+		if (findRoom(from) != null) {
+			mContext.logMessage("[알림] 방 생성 실패 " + userId + "_" + from + "\n");
+			writer.println("FailNewRoom/" + from);
+			return;
 		}
 		rooms.add(from);
 		mContext.getRoomList().add(new Room(from, Integer.parseInt(data), this));
@@ -223,45 +228,35 @@ public class User extends Thread implements ProtocolImpl {
 
 	@Override
 	public void enterRoom() {
-		for (int i = 0; i < mContext.getRoomList().size(); i++) {
-			Room room = mContext.getRoomList().elementAt(i);
-			// 방이름과 비밀번호가 매치된다면
-			if (room.getRoomName().equals(from) && room.getPassWord() == Integer.parseInt(data)) {
-				rooms.add(from);
-				room.getUserList().add(this);
-				mContext.logMessage("[알림] 방 입장 " + userId + "_" + from + "\n");
-				writer.println("enterRoom/" + from);
-				room.roomBroadCast("roomMsg/" + from + "/" + userId + "/입장");
-				return;
-			}
+		Room room = findRoom(from);
+		if (room != null && room.getPassWord() == Integer.parseInt(data)) {
+			rooms.add(from);
+			room.getUserList().add(this);
+			mContext.logMessage("[알림] 방 입장 " + userId + "_" + from + "\n");
+			writer.println("enterRoom/" + from);
+			room.roomBroadCast("roomMsg/" + from + "/" + userId + "/입장");
+		} else {
+			mContext.logMessage("[알림] 방 입장 실패" + userId + "_" + from + "\n");
+			writer.println("FailEnterRoom/" + from);
 		}
-		mContext.logMessage("[알림] 방 입장 실패" + userId + "_" + from + "\n");
-		writer.println("FailEnterRoom/" + from);
 	}
 
 	@Override
 	public void roomMsg() {
 		mContext.logMessage("[메세지] " + from + "에서 " + data + " : " + msg + "\n");
-		for (int i = 0; i < mContext.getRoomList().size(); i++) {
-			Room room = mContext.getRoomList().elementAt(i);
-			// 방이름이 매치된다면
-			if (room.getRoomName().equals(from)) {
-				room.roomBroadCast("roomMsg/" + from + "/" + userId + "/" + msg);
-				return;
-			}
+		Room room;
+		if ((room = findRoom(from)) != null) {
+			room.roomBroadCast("roomMsg/" + from + "/" + userId + "/" + msg);
 		}
 	}
 
 	@Override
 	public void personalMsg() {
 		// data : 보내줄 id
-		for (int i = 0; i < mContext.getUserList().size(); i++) {
-			User user = mContext.getUserList().elementAt(i);
-			if (data.equals(user.getUserId())) {
-				user.getWriter().println("personalMsg/" + from + "/" + msg);
-				mContext.logMessage("[메세지] 개인 메세지 " + from + " -> " + data + " : " + msg + "\n");
-				return;
-			}
+		User user = findUser(data);
+		if(data != null) {
+			user.getWriter().println("personalMsg/" + from + "/" + msg);
+			mContext.logMessage("[메세지] 개인 메세지 " + from + " -> " + data + " : " + msg + "\n");
 		}
 	}
 
@@ -269,27 +264,44 @@ public class User extends Thread implements ProtocolImpl {
 	public void groupMsg() {
 		for (int i = 0; i < mContext.getUserList().size(); i++) {
 			User user = mContext.getUserList().elementAt(i);
-			user.getWriter().println("groupMsg/" + from + "/" + msg);
-			mContext.logMessage("[메세지] 단체 메세지 " + from + " : " + msg + "\n");
+			user.getWriter().println("groupMsg/" + from + "/" + data);
+			mContext.logMessage("[메세지] 단체 메세지 " + from + " : " + data + "\n");
 		}
 	}
 
 	@Override
 	public void outRoom() {
+		Room room;
+		if ((room = findRoom(from)) != null) {
+			room.getUserList().remove(this);
+			mContext.logMessage("[알림] 방 퇴장 " + userId + "_" + from + "\n");
+			writer.println("outRoom/" + from);
+			room.roomBroadCast("roomMsg/" + from + "/" + userId + "/퇴장");
+			if (room.getUserList().isEmpty()) {
+				removeRoom();
+			}
+			rooms.remove(from);
+		}
+	}
+
+	// 벡터 찾기
+	private Room findRoom(String roomName) {
 		for (int i = 0; i < mContext.getRoomList().size(); i++) {
 			Room room = mContext.getRoomList().elementAt(i);
-			if (room.getRoomName().equals(from)) {
-				room.getUserList().remove(this);
-				mContext.logMessage("[알림] 방 퇴장 " + userId + "_" + from + "\n");
-				writer.println("outRoom/" + from);
-				room.roomBroadCast("roomMsg/" + from + "/" + userId + "/퇴장");
-				if (room.getUserList().isEmpty()) {
-					removeRoom();
-				}
-				rooms.remove(from);
-				return;
+			if (room.getRoomName().equals(roomName)) {
+				return room;
 			}
 		}
+		return null;
+	}
+	private User findUser(String id) {
+		for (int i = 0; i < mContext.getUserList().size(); i++) {
+			User user = mContext.getUserList().elementAt(i);
+			if (user.getUserId().equals(id)) {
+				return user;
+			}
+		}
+		return null;
 	}
 
 }

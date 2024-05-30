@@ -167,6 +167,7 @@ public class Client implements ProtocolImpl, CallBackClientService {
 			logOutUser();
 			break;
 		case "roomList":
+			data = tokenizer.nextToken(); // password
 			roomList();
 			break;
 
@@ -253,7 +254,11 @@ public class Client implements ProtocolImpl, CallBackClientService {
 
 	// 방 리스트 받아옴
 	public void roomList() {
-		roomNameList.add(from);
+		if (data.equals(PW_NULL)) {
+			roomNameList.add("[공개]" + from);
+		} else {
+			roomNameList.add("[비밀]" + from);
+		}
 		roomList.setListData(roomNameList);
 	}
 
@@ -293,30 +298,26 @@ public class Client implements ProtocolImpl, CallBackClientService {
 	public void roomMsg() {
 		// data : userId, msg : 메세지
 		if (msg.equals("입장")) {
-			for (int i = 0; i < roomPanels.size(); i++) {
-				ClientRoomPanel roomPanel = roomPanels.elementAt(i);
-				if (from.equals(roomPanel.getRoomName())) {
-					roomPanel.getChatArea().append(data + "님이 입장 하셨습니다\n");
-					return;
-				}
+			ClientRoomPanel roomPanel;
+			if ((roomPanel = findRoomPanel(from)) != null) {
+				roomPanel.getChatArea().append(data + "님이 입장 하셨습니다\n");
+				return;
 			}
 		} else if (msg.equals("퇴장")) {
-			for (int i = 0; i < roomPanels.size(); i++) {
-				ClientRoomPanel roomPanel = roomPanels.elementAt(i);
-				if (from.equals(roomPanel.getRoomName())) {
-					roomPanel.getChatArea().append(data + "님이 퇴장 하셨습니다\n");
-					return;
-				}
+			ClientRoomPanel roomPanel;
+			if ((roomPanel = findRoomPanel(from)) != null) {
+				roomPanel.getChatArea().append(data + "님이 퇴장 하셨습니다\n");
+				return;
 			}
 		}
 		if (data.equals(myId)) {
 			data = "나";
 		}
 		for (int i = 0; i < roomPanels.size(); i++) {
-			ClientRoomPanel roomPanel = roomPanels.elementAt(i);
-			if (from.equals(roomPanel.getRoomName())) {
+			ClientRoomPanel roomPanel;
+			if ((roomPanel = findRoomPanel(from)) != null) {
 				roomPanel.getChatArea().append(data + " : " + msg + "\n");
-				return;
+				break;
 			}
 		}
 	}
@@ -328,7 +329,10 @@ public class Client implements ProtocolImpl, CallBackClientService {
 	
 	@Override
 	public void groupMsg() {
-		(new MessageFrame()).groupMsg(from, data);
+		// 내가 보낸건 무시
+		if (!from.equals(myId)) {
+			(new MessageFrame()).groupMsg(from, data);
+		}
 	}
 	
 	// 방 나가기 시 호출
@@ -336,15 +340,10 @@ public class Client implements ProtocolImpl, CallBackClientService {
 	public void outRoom() {
 		myRooms.remove(from);
 		getClientFrame().getTabPane().setSelectedIndex(2);
-		for (int i = 0; i < roomPanels.size(); i++) {
-			ClientRoomPanel roomPanel = roomPanels.elementAt(i);
-			if (from.equals(roomPanel.getRoomName())) {
-				getClientFrame().getTabPane().remove(roomPanel);
-				break;
-			}
+		ClientRoomPanel roomPanel;
+		if ((roomPanel = findRoomPanel(from)) != null) {
+			getClientFrame().getTabPane().remove(roomPanel);
 		}
-		newRoomBtn.setEnabled(true);
-		enterRoomBtn.setEnabled(true);
 	}
 	
 	// 방 제거
@@ -353,6 +352,17 @@ public class Client implements ProtocolImpl, CallBackClientService {
 		roomNameList.remove("[공개]" + from);
 		roomNameList.remove("[비밀]" + from);
 		roomList.setListData(roomNameList);
+	}
+	
+	// 벡터 찾기
+	private ClientRoomPanel findRoomPanel(String roomName) {
+		for (int i = 0; i < roomPanels.size(); i++) {
+			ClientRoomPanel roomPanel = roomPanels.elementAt(i);
+			if (roomName.equals(roomPanel.getRoomName())) {
+				return roomPanel;
+			}
+		}
+		return null;
 	}
 
 	// 버튼 상호작용 콜백 메서드
@@ -384,6 +394,10 @@ public class Client implements ProtocolImpl, CallBackClientService {
 
 	@Override
 	public void clickPersonalMsgBtn(String id, String msg) {
+		if (id.equals(myId)) {
+			(new MessageFrame()).errorMsg("self");
+			return;
+		}
 		writer.println("personalMsg/" + myId + "/" + id + "/" + msg);
 	}
 

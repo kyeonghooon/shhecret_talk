@@ -106,36 +106,14 @@ public class Server implements CallBackServerService {
 		}
 	}
 
-	// 방에서 유저를 강제로 빼는 메서드 - 클라이언트가 사라졌을때만 호출됨
-	public void outUserFromRoom(String roomName, User user) {
-		if (roomName == null) {
-			return;
-		}
-		for (int i = 0; i < roomList.size(); i++) {
-			Room room = roomList.elementAt(i);
-			if (roomName.equals(room.getRoomName())) {
-				room.getUserList().remove(user);
-				if (room.getUserList().isEmpty()) {
-					user.removeRoom();
-				}
-			}
-		}
-	}
-
 	// 버튼 상호작용 콜백 메서드
 	@Override
 	public void clickKickBtn(String userId) {
 		for (int i = 0; i < userList.size(); i++) {
 			User user = userList.elementAt(i);
 			if (userId.equals(user.getUserId())) {
-				try {
-					user.getWriter().println("kick/" + user.getId());
-					user.logOutUser();
-					// 소켓을 닫아버림
-					user.getSocket().close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				user.logOutUser();
+				user.getWriter().println("kick/" + user.getId());
 			}
 		}
 	}

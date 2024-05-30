@@ -8,6 +8,7 @@ import java.util.Vector;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
@@ -59,12 +60,12 @@ public class ClientFrame extends JFrame {
 		setSize(400, (int) (400 * 1.618));
 		setContentPane(backgroundLabel); // add 처리
 		setLayout(null); // 좌표값으로 배치
-		setResizable(false); // 프레임 조절 불가
+		//setResizable(false); // 프레임 조절 불가 -> 탭이 너무 많아 지면 화면을 키워야함 ㅠㅠ
 		setLocationRelativeTo(null); // JFrame을 모니터 가운데 자동 배치
 
 		add(tabPane);
-		tabPane.setSize(getWidth(), getHeight());
 		tabPane.setLocation(0, 0);
+		tabPane.setSize(getWidth(), getHeight());
 		tabPane.setFont(new Font("Noto Sans KR", Font.BOLD, 14));
 
 		tabPane.addTab("유저 리스트", userListPanel);
