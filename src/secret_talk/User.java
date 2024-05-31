@@ -31,6 +31,7 @@ public class User extends Thread implements ProtocolImpl {
 	private String userId;
 	private String currentRoom;
 	private Vector<String> rooms = new Vector<>();
+	private Room selectedRoom;
 
 	/**
 	 * 예시)<br>
@@ -107,19 +108,20 @@ public class User extends Thread implements ProtocolImpl {
 	}
 
 	public void logOutUser() {
-		while(!rooms.isEmpty()) {
-			String roomName = rooms.elementAt(0);
-			Room room = findRoom(roomName);
-			if (room != null) {
-				room.getUserList().remove(this);
+
+		for (int i = 0; i < rooms.size(); i++) {
+			String roomName = rooms.elementAt(i);
+			selectedRoom = findRoom(roomName);
+			if (selectedRoom != null) {
+				selectedRoom.getUserList().remove(this);
 				mContext.logMessage("[알림] 방 퇴장 " + userId + "_" + roomName + "\n");
 				writer.println("outRoom/" + roomName);
-				room.roomBroadCast("roomMsg/" + roomName + "/" + userId + "/퇴장");
-				if (room.getUserList().isEmpty()) {
+				selectedRoom.roomBroadCast("roomMsg/" + roomName + "/" + userId + "/퇴장");
+				rooms.remove(roomName);
+				i--;
+				if (selectedRoom.getUserList().isEmpty()) {
 					removeRoom();
 				}
-				rooms.remove(0);
-				System.out.println("a");
 			}
 		}
 		mContext.removeUser(this);
@@ -128,15 +130,13 @@ public class User extends Thread implements ProtocolImpl {
 
 	@Override
 	public void removeRoom() {
-		for (Room room : mContext.getRoomList()) {
-			if (room.getUserList().isEmpty()) {
-				String roomName = room.getRoomName();
-				mContext.getRoomList().remove(room);
-				mContext.getRoomNames().remove(roomName);
-				mContext.broadCast("removeRoom/" + roomName);
-			}
-		}
+		String roomName = selectedRoom.getRoomName();
+		mContext.getRoomList().remove(selectedRoom);
+		mContext.getRoomNames().remove(roomName);
+		mContext.broadCast("removeRoom/" + roomName);
+		mContext.logMessage("[알림] 방 제거 " + userId + "_" + roomName + "\n");
 	}
+
 
 	/**
 	 * 읽기용 쓰레드<br>
@@ -254,7 +254,7 @@ public class User extends Thread implements ProtocolImpl {
 	public void personalMsg() {
 		// data : 보내줄 id
 		User user = findUser(data);
-		if(data != null) {
+		if (data != null) {
 			user.getWriter().println("personalMsg/" + from + "/" + msg);
 			mContext.logMessage("[메세지] 개인 메세지 " + from + " -> " + data + " : " + msg + "\n");
 		}
@@ -294,6 +294,7 @@ public class User extends Thread implements ProtocolImpl {
 		}
 		return null;
 	}
+
 	private User findUser(String id) {
 		for (int i = 0; i < mContext.getUserList().size(); i++) {
 			User user = mContext.getUserList().elementAt(i);
