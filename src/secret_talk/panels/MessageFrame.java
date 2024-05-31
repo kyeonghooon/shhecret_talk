@@ -23,8 +23,7 @@ public class MessageFrame extends JFrame{
 		addEventListener();
 	}
 	private void initData() {
-		// TODO 이미지 교체
-		backgroundLabel = new JLabel();
+		backgroundLabel = new JLabel(new ImageIcon("images/bg.png"));
 		
 		msgBoard = new JTextArea();
 		textLabel = new JLabel();

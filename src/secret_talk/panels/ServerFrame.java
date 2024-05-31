@@ -23,8 +23,6 @@ public class ServerFrame extends JFrame {
 	private ServerLogPanel logPanel;
 	private ServerUserListPanel userListPanel;
 
-	private JLabel backgroundLabel;
-
 	private boolean serverCreated;
 	private int port;
 
@@ -38,9 +36,6 @@ public class ServerFrame extends JFrame {
 	}
 
 	private void initData() {
-		// TODO 이미지 교체
-		backgroundLabel = new JLabel();
-
 		logPanel = new ServerLogPanel();
 		userListPanel = new ServerUserListPanel(mContext);
 	}
@@ -50,13 +45,12 @@ public class ServerFrame extends JFrame {
 		// Frame -> root Panel
 		setTitle(" Secret Talk Server Manager ");
 		setSize(350, 566);
-		setContentPane(backgroundLabel); // add 처리
 		setLayout(null); // 좌표값으로 배치
 		setResizable(false); // 프레임 조절 불가
 		setLocationRelativeTo(null); // JFrame을 모니터 가운데 자동 배치
-
-		backgroundLabel.add(logPanel);
-		backgroundLabel.add(userListPanel);
+		
+		add(logPanel);
+		add(userListPanel);
 		logPanel.setLocation(0, 205);
 		userListPanel.setLocation(0, 15);
 	}
@@ -67,8 +61,6 @@ public class ServerFrame extends JFrame {
 
 	// 서버 소켓 생성을 위한 패널
 	private class SetupServerPanel extends JFrame {
-
-		private JLabel backgroundLabel;
 
 		// PORT NUMBER와 관련된 컴포넌트
 		private JLabel portNumber;
@@ -82,8 +74,6 @@ public class ServerFrame extends JFrame {
 		}
 
 		private void initData() {
-			// TODO 이미지 교체
-			backgroundLabel = new JLabel();
 			portNumber = new JLabel("PORT NUMBER");
 			inputPort = new JTextField();
 			createBtn = new JButton("CREATE");
@@ -94,7 +84,6 @@ public class ServerFrame extends JFrame {
 			// Frame -> root Panel
 			setTitle(" Secret Talk Server Creater ");
 			setSize(380, 100);
-			setContentPane(backgroundLabel); // add 처리
 			setLayout(null); // 좌표값으로 배치
 			setResizable(false); // 프레임 조절 불가
 			setLocationRelativeTo(null); // JFrame을 모니터 가운데 자동 배치

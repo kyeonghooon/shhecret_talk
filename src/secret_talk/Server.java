@@ -139,7 +139,7 @@ public class Server implements CallBackServerService {
 		}
 	}
 
-	// 테스트 코드
+	// 실행 코드
 	public static void main(String[] args) {
 		Server server = new Server();
 		server.openFrame();

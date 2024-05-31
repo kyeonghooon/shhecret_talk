@@ -5,10 +5,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
@@ -27,7 +27,6 @@ public class ClientFrame extends JFrame {
 	private ClientRoomListPanel roomListPanel;
 	private Vector<ClientRoomPanel> roomPanels;
 
-	private JLabel backgroundLabel;
 	private JTabbedPane tabPane;
 
 	// 연결 확인 -> id입력으로 넘어감
@@ -43,9 +42,6 @@ public class ClientFrame extends JFrame {
 	}
 
 	private void initData() {
-		// TODO 이미지 교체
-		backgroundLabel = new JLabel();
-
 		userListPanel = new ClientUserListPanel(mContext);
 		roomListPanel = new ClientRoomListPanel(mContext);
 		roomPanels = new Vector<ClientRoomPanel>();
@@ -58,7 +54,6 @@ public class ClientFrame extends JFrame {
 		// Frame -> root Panel
 		setTitle(" Secret Talk ");
 		setSize(400, (int) (400 * 1.618));
-		setContentPane(backgroundLabel); // add 처리
 		setLayout(null); // 좌표값으로 배치
 		//setResizable(false); // 프레임 조절 불가 -> 탭이 너무 많아 지면 화면을 키워야함 ㅠㅠ
 		setLocationRelativeTo(null); // JFrame을 모니터 가운데 자동 배치
@@ -68,8 +63,9 @@ public class ClientFrame extends JFrame {
 		tabPane.setSize(getWidth(), getHeight());
 		tabPane.setFont(new Font("Noto Sans KR", Font.BOLD, 14));
 
-		tabPane.addTab("유저 리스트", userListPanel);
+		tabPane.addTab("유저 리스트",userListPanel);
 		tabPane.addTab("방 리스트", roomListPanel);
+		
 	}
 
 	private void addEventListener() {
@@ -94,8 +90,7 @@ public class ClientFrame extends JFrame {
 		}
 
 		private void initData() {
-			// TODO 이미지 교체
-			backgroundLabel = new JLabel();
+			backgroundLabel = new JLabel(new ImageIcon("images/bg2.png"));
 			ipAddress = new JLabel("IP");
 			inputIp = new JTextField();
 			portNumber = new JLabel("PORT NUMBER");
@@ -183,8 +178,7 @@ public class ClientFrame extends JFrame {
 		}
 
 		private void initData() {
-			// TODO 이미지 교체
-			backgroundLabel = new JLabel();
+			backgroundLabel = new JLabel(new ImageIcon("images/bg2.png"));
 			userId = new JLabel("I D");
 			inputId = new JTextField();
 			createBtn = new JButton("CREATE");

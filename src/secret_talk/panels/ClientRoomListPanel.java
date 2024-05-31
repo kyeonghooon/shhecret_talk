@@ -2,11 +2,13 @@ package secret_talk.panels;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -24,8 +26,6 @@ import secret_talk.Client;
 public class ClientRoomListPanel extends JPanel implements ActionListener {
 
 	private Client mContext;
-
-	private JLabel backgroundLabel;
 
 	// 방 리스트 컴포넌트
 	private JLabel textLabelList;
@@ -55,9 +55,6 @@ public class ClientRoomListPanel extends JPanel implements ActionListener {
 	}
 
 	private void initData() {
-		// TODO 이미지 교체
-		backgroundLabel = new JLabel();
-
 		// 방 리스트 컴포넌트
 		textLabelList = new JLabel("방 리스트");
 		roomList = new JList<String>();
@@ -83,10 +80,6 @@ public class ClientRoomListPanel extends JPanel implements ActionListener {
 		setSize(getWidth(), getHeight());
 		setLayout(null); // 좌표값으로 배치
 
-		add(backgroundLabel);
-		backgroundLabel.setSize(getWidth(), getHeight());
-		backgroundLabel.setLocation(0, 0);
-
 		// 방 리스트 텍스트 라벨
 		add(textLabelList);
 		textLabelList.setFont(new Font("Noto Sans KR", Font.BOLD, 20));
@@ -99,7 +92,7 @@ public class ClientRoomListPanel extends JPanel implements ActionListener {
 		scrollPane.setBorder(new LineBorder(Color.BLACK, 2));
 		scrollPane.setSize(350, 380);
 		scrollPane.setLocation(15, 50);
-		
+
 		// 방 이름 입력 텍스트 라벨
 		add(textLabelRoom);
 		textLabelRoom.setFont(new Font("Noto Sans KR", Font.BOLD, 20));
@@ -169,7 +162,7 @@ public class ClientRoomListPanel extends JPanel implements ActionListener {
 				(new MessageFrame()).errorMsg("roomNameOver");
 				return;
 			}
-			
+
 			// 비밀번호가 없을때
 			if (password.equals("")) {
 				password = mContext.PW_NULL;
@@ -200,4 +193,9 @@ public class ClientRoomListPanel extends JPanel implements ActionListener {
 		}
 	}
 
+	@Override
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		g.drawImage(new ImageIcon("images/bg.png").getImage(), 0, 0, getWidth(), (int) (getWidth() * 1.8705), null);
+	}
 }

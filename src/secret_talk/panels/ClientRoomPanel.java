@@ -2,11 +2,13 @@ package secret_talk.panels;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -25,8 +27,6 @@ public class ClientRoomPanel extends JPanel implements ActionListener {
 
 	private Client mContext;
 
-	private JLabel backgroundLabel;
-
 	// 메세지 보드 컴포넌트
 	private JLabel textLabelchat;
 	private JScrollPane scrollPane;
@@ -36,7 +36,7 @@ public class ClientRoomPanel extends JPanel implements ActionListener {
 	private JLabel textLabelMsg;
 	private JTextField messageField;
 	private JButton messageBtn;
-	
+
 	// 방에서 나가기 버튼
 	private JButton outRoomBtn;
 
@@ -51,10 +51,6 @@ public class ClientRoomPanel extends JPanel implements ActionListener {
 	}
 
 	private void initData() {
-		// TODO 이미지 교체
-		backgroundLabel = new JLabel();
-
-		// 유저 리스트 컴포넌트
 		textLabelchat = new JLabel("채팅창");
 		chatArea = new JTextArea();
 		scrollPane = new JScrollPane(chatArea);
@@ -63,7 +59,7 @@ public class ClientRoomPanel extends JPanel implements ActionListener {
 		textLabelMsg = new JLabel("메세지 보내기");
 		messageField = new JTextField();
 		messageBtn = new JButton("메세지 보내기");
-		
+
 		// 나가기 버튼
 		outRoomBtn = new JButton("나가기");
 	}
@@ -71,10 +67,6 @@ public class ClientRoomPanel extends JPanel implements ActionListener {
 	private void setInitLayout() {
 		setSize(getWidth(), getHeight());
 		setLayout(null); // 좌표값으로 배치
-
-		add(backgroundLabel);
-		backgroundLabel.setSize(getWidth(), getHeight());
-		backgroundLabel.setLocation(0, 0);
 
 		// 채팅창 텍스트 라벨
 		add(textLabelchat);
@@ -105,7 +97,7 @@ public class ClientRoomPanel extends JPanel implements ActionListener {
 		messageBtn.setFont(new Font("Noto Sans KR", Font.BOLD, 20));
 		messageBtn.setSize(165, 30);
 		messageBtn.setLocation(15, 525);
-		
+
 		add(outRoomBtn);
 		outRoomBtn.setFont(new Font("Noto Sans KR", Font.BOLD, 20));
 		outRoomBtn.setSize(165, 30);
@@ -141,6 +133,12 @@ public class ClientRoomPanel extends JPanel implements ActionListener {
 			mContext.clickRoomMsgBtn(roomName, msg);
 			messageField.setText("");
 		}
+	}
+
+	@Override
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		g.drawImage(new ImageIcon("images/bg.png").getImage(), 0, 0, getWidth(), (int) (getWidth() * 1.8705), null);
 	}
 
 }

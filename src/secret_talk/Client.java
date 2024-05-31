@@ -361,12 +361,6 @@ public class Client implements ProtocolImpl, CallBackClientService {
 				return roomPanel;
 			}
 		}
-//		for (int i = 0; i < roomPanels.size(); i++) {
-//			ClientRoomPanel roomPanel = roomPanels.elementAt(i);
-//			if (roomName.equals(roomPanel.getRoomName())) {
-//				return roomPanel;
-//			}
-//		}
 		return null;
 	}
 
@@ -411,7 +405,7 @@ public class Client implements ProtocolImpl, CallBackClientService {
 		writer.println("groupMsg/" + myId + "/" + msg);
 	}
 
-	// 테스트 코드
+	// 실행 코드
 	public static void main(String[] args) {
 		Client client = new Client();
 		client.openFrame();

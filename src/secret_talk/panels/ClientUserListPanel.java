@@ -2,9 +2,11 @@ package secret_talk.panels;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -19,11 +21,9 @@ import secret_talk.Client;
 
 @Getter
 @Setter
-public class ClientUserListPanel extends JPanel implements ActionListener{
-	
-	private Client mContext;
+public class ClientUserListPanel extends JPanel implements ActionListener {
 
-	private JLabel backgroundLabel;
+	private Client mContext;
 
 	// 유저 리스트 컴포넌트
 	private JLabel textLabelList;
@@ -44,9 +44,6 @@ public class ClientUserListPanel extends JPanel implements ActionListener{
 	}
 
 	private void initData() {
-		// TODO 이미지 교체
-		backgroundLabel = new JLabel();
-
 		// 유저 리스트 컴포넌트
 		textLabelList = new JLabel("유저 리스트");
 		userList = new JList<String>();
@@ -62,10 +59,6 @@ public class ClientUserListPanel extends JPanel implements ActionListener{
 	private void setInitLayout() {
 		setSize(getWidth(), getHeight());
 		setLayout(null); // 좌표값으로 배치
-
-		add(backgroundLabel);
-		backgroundLabel.setSize(getWidth(), getHeight());
-		backgroundLabel.setLocation(0, 0);
 
 		// 유저 리스트 텍스트 라벨
 		add(textLabelList);
@@ -115,7 +108,7 @@ public class ClientUserListPanel extends JPanel implements ActionListener{
 		if (e.getSource() == personalMsgBtn) {
 			String id = userList.getSelectedValue();
 			String msg = messageField.getText();
-			if ( id.equals("") || msg.equals("")) {
+			if (id.equals("") || msg.equals("")) {
 				(new MessageFrame()).errorMsg("null");
 				return;
 			}
@@ -131,6 +124,12 @@ public class ClientUserListPanel extends JPanel implements ActionListener{
 			mContext.clickGroupMsgBtn(msg);
 			messageField.setText("");
 		}
+	}
+
+	@Override
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		g.drawImage(new ImageIcon("images/bg.png").getImage(), 0, 0, getWidth(), (int) (getWidth() * 1.8705), null);
 	}
 
 }
