@@ -36,8 +36,6 @@ public class Client implements ProtocolImpl, CallBackClientService {
 	// 상호작용 가능한 컴포넌트
 	private JList<String> userList;
 	private JList<String> roomList;
-	private JButton newRoomBtn;
-	private JButton enterRoomBtn;
 
 	// 명단 업데이트 용 벡터
 	private Vector<String> userIdList = new Vector<>();
@@ -120,8 +118,6 @@ public class Client implements ProtocolImpl, CallBackClientService {
 	public void setupComponet() {
 		userList = clientFrame.getUserListPanel().getUserList();
 		roomList = clientFrame.getRoomListPanel().getRoomList();
-		newRoomBtn = clientFrame.getRoomListPanel().getNewRoomBtn();
-		enterRoomBtn = clientFrame.getRoomListPanel().getEnterRoomBtn();
 	}
 
 	// 서버 측으로부터 요청을 받음
@@ -285,8 +281,6 @@ public class Client implements ProtocolImpl, CallBackClientService {
 	@Override
 	public void enterRoom() {
 		myRooms.add(from);
-		newRoomBtn.setEnabled(false);
-		enterRoomBtn.setEnabled(false);
 		ClientRoomPanel roomPanel = new ClientRoomPanel(this, from);
 		roomPanels.add(roomPanel);
 		clientFrame.getTabPane().addTab(from, roomPanel);
