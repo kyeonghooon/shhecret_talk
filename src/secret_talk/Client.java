@@ -356,12 +356,17 @@ public class Client implements ProtocolImpl, CallBackClientService {
 	
 	// 벡터 찾기
 	private ClientRoomPanel findRoomPanel(String roomName) {
-		for (int i = 0; i < roomPanels.size(); i++) {
-			ClientRoomPanel roomPanel = roomPanels.elementAt(i);
+		for (ClientRoomPanel roomPanel : roomPanels) {
 			if (roomName.equals(roomPanel.getRoomName())) {
 				return roomPanel;
 			}
 		}
+//		for (int i = 0; i < roomPanels.size(); i++) {
+//			ClientRoomPanel roomPanel = roomPanels.elementAt(i);
+//			if (roomName.equals(roomPanel.getRoomName())) {
+//				return roomPanel;
+//			}
+//		}
 		return null;
 	}
 

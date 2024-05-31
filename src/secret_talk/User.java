@@ -271,13 +271,12 @@ public class User extends Thread implements ProtocolImpl {
 
 	@Override
 	public void outRoom() {
-		Room room;
-		if ((room = findRoom(from)) != null) {
-			room.getUserList().remove(this);
+		if ((selectedRoom = findRoom(from)) != null) {
+			selectedRoom.getUserList().remove(this);
 			mContext.logMessage("[알림] 방 퇴장 " + userId + "_" + from + "\n");
 			writer.println("outRoom/" + from);
-			room.roomBroadCast("roomMsg/" + from + "/" + userId + "/퇴장");
-			if (room.getUserList().isEmpty()) {
+			selectedRoom.roomBroadCast("roomMsg/" + from + "/" + userId + "/퇴장");
+			if (selectedRoom.getUserList().isEmpty()) {
 				removeRoom();
 			}
 			rooms.remove(from);
