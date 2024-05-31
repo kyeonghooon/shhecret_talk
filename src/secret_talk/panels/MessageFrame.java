@@ -141,6 +141,7 @@ public class MessageFrame extends JFrame{
 			textLabel.setText("추 방");
 			msgBoard.append("서버관리자로 부터 추방 되었습니다.");
 			imgLabel.setIcon(new ImageIcon("images/kick.png"));
+			imgLabel.setLocation(20, 13);
 			break;
 		}
 		setVisible(true);

@@ -8,7 +8,6 @@ import java.net.Socket;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import javax.swing.JButton;
 import javax.swing.JList;
 
 import lombok.Getter;
