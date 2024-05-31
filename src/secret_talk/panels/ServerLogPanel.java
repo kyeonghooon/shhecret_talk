@@ -41,7 +41,7 @@ public class ServerLogPanel extends JPanel{
 		textLabel.setLocation(132, 18);
 		
 		add(scrollPane);
-		logBoard.setEnabled(false);
+		logBoard.setEditable(false);
 		scrollPane.setBorder(new LineBorder(Color.BLACK, 3));
 		scrollPane.setSize(300, 260);
 		scrollPane.setLocation(15, 50);

@@ -140,10 +140,6 @@ public class Client implements ProtocolImpl, CallBackClientService {
 	}
 
 	/**
-	 * 보내기용 프로토콜 메서드
-	 */
-
-	/**
 	 * 받기용 프로토콜 메서드
 	 */
 	private void checkProtocol(String str) {
@@ -358,6 +354,9 @@ public class Client implements ProtocolImpl, CallBackClientService {
 	}
 
 	// 버튼 상호작용 콜백 메서드
+	/**
+	 * 보내기용 프로토콜 메서드
+	 */
 	@Override
 	public void clickNewRoomBtn(String roomName, String password) {
 		writer.println("newRoom/" + roomName + "/" + password);
